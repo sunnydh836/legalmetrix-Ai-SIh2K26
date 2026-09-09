@@ -1,0 +1,103 @@
+# ==========================================
+# LegalMetrix AI — Git Ignore Rules
+# ==========================================
+
+# Environment Variables & Secrets
+.env
+.env.*
+.env.local
+.env.*.local
+*.env
+!.env.example
+!*.env.example
+!backend/.env.example
+!frontend/.env.example
+
+# Python Bytecode & Cache
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.pyd
+*.dll
+*.dylib
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+backend/venv/
+backend/.venv/
+**/venv/
+**/.venv/
+
+# Testing & Code Quality Coverage
+.pytest_cache/
+**/.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+
+# Node / Frontend Build & Cache
+node_modules/
+**/node_modules/
+frontend/dist/
+dist/
+frontend/.vite/
+.vite/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Runtime Storage, Uploads & Temporary Files
+storage/scans/*
+backend/storage/scans/*
+!backend/storage/scans/.gitkeep
+test_storage/
+tmp/
+temp/
+*.tmp
+
+# Logs
+*.log
+logs/
+backend/logs/
+
+# Local SQLite / Test Databases
+*.db
+*.sqlite
+*.sqlite3
+
+# IDEs, Editors & OS Files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+desktop.ini

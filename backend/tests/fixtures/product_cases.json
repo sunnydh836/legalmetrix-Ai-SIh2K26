@@ -1,0 +1,222 @@
+[
+  {
+    "id": "CASE-001",
+    "description": "Standard packaged biscuits with clear front and back label",
+    "image_condition": "CLEAR",
+    "expected_pipeline_behavior": {
+      "image_quality": "ACCEPTED",
+      "ocr_confidence_tier": "HIGH",
+      "declaration_extraction": "ALL_PRESENT",
+      "rule_engine_action": "DETERMINISTIC_PASS"
+    }
+  },
+  {
+    "id": "CASE-002",
+    "description": "Motion-blurred label taken from a handheld mobile device",
+    "image_condition": "BLURRY",
+    "expected_pipeline_behavior": {
+      "image_quality": "RECAPTURE_RECOMMENDED",
+      "ocr_confidence_tier": "LOW",
+      "declaration_extraction": "PARTIAL",
+      "rule_engine_action": "MANUAL_REVIEW_REQUIRED"
+    }
+  },
+  {
+    "id": "CASE-003",
+    "description": "Glossy laminate snack pouch with bright flash glare obscuring MRP",
+    "image_condition": "GLARE",
+    "expected_pipeline_behavior": {
+      "image_quality": "REVIEW",
+      "ocr_confidence_tier": "MIXED",
+      "declaration_extraction": "MRP_OCCLUDED",
+      "rule_engine_action": "MANUAL_REVIEW_REQUIRED"
+    }
+  },
+  {
+    "id": "CASE-004",
+    "description": "Compressed low-resolution thumbnail image (<600px width)",
+    "image_condition": "LOW_RESOLUTION",
+    "expected_pipeline_behavior": {
+      "image_quality": "RECAPTURE_RECOMMENDED",
+      "ocr_confidence_tier": "LOW",
+      "declaration_extraction": "UNRELIABLE",
+      "rule_engine_action": "MANUAL_REVIEW_REQUIRED"
+    }
+  },
+  {
+    "id": "CASE-005",
+    "description": "Label captured upside down (180 degree rotation)",
+    "image_condition": "ROTATED",
+    "expected_pipeline_behavior": {
+      "image_quality": "ACCEPTED",
+      "ocr_confidence_tier": "HIGH",
+      "declaration_extraction": "ALL_PRESENT",
+      "rule_engine_action": "DETERMINISTIC_EVALUATION"
+    }
+  },
+  {
+    "id": "CASE-006",
+    "description": "Cylindrical beverage can with perspective distortion on cylindrical boundary",
+    "image_condition": "CURVED_SURFACE",
+    "expected_pipeline_behavior": {
+      "image_quality": "ACCEPTED",
+      "ocr_confidence_tier": "MEDIUM",
+      "declaration_extraction": "MULTI_BLOCK_MERGED",
+      "rule_engine_action": "DETERMINISTIC_EVALUATION"
+    }
+  },
+  {
+    "id": "CASE-007",
+    "description": "Product packaging with dual Hindi and English mandatory declarations",
+    "image_condition": "MULTILINGUAL",
+    "expected_pipeline_behavior": {
+      "image_quality": "ACCEPTED",
+      "ocr_confidence_tier": "HIGH",
+      "declaration_extraction": "BILINGUAL_PARSED",
+      "rule_engine_action": "DETERMINISTIC_PASS"
+    }
+  },
+  {
+    "id": "CASE-008",
+    "description": "Imported cosmetic item with missing Maximum Retail Price (MRP) declaration",
+    "image_condition": "CLEAR",
+    "expected_pipeline_behavior": {
+      "image_quality": "ACCEPTED",
+      "ocr_confidence_tier": "HIGH",
+      "declaration_extraction": "MRP_MISSING",
+      "rule_engine_action": "DETERMINISTIC_FAIL"
+    }
+  },
+  {
+    "id": "CASE-009",
+    "description": "Food package with missing Net Quantity declaration",
+    "image_condition": "CLEAR",
+    "expected_pipeline_behavior": {
+      "image_quality": "ACCEPTED",
+      "ocr_confidence_tier": "HIGH",
+      "declaration_extraction": "NET_QUANTITY_MISSING",
+      "rule_engine_action": "DETERMINISTIC_FAIL"
+    }
+  },
+  {
+    "id": "CASE-010",
+    "description": "Commodity package showing brand name but omitting manufacturer full address",
+    "image_condition": "CLEAR",
+    "expected_pipeline_behavior": {
+      "image_quality": "ACCEPTED",
+      "ocr_confidence_tier": "HIGH",
+      "declaration_extraction": "MANUFACTURER_INCOMPLETE",
+      "rule_engine_action": "DETERMINISTIC_FAIL"
+    }
+  },
+  {
+    "id": "CASE-011",
+    "description": "Detergent box without Consumer Care helpline number or email address",
+    "image_condition": "CLEAR",
+    "expected_pipeline_behavior": {
+      "image_quality": "ACCEPTED",
+      "ocr_confidence_tier": "HIGH",
+      "declaration_extraction": "CONSUMER_CARE_MISSING",
+      "rule_engine_action": "DETERMINISTIC_FAIL"
+    }
+  },
+  {
+    "id": "CASE-012",
+    "description": "Perishable snack displaying both 'Date of Packaging' and 'Use By' dates",
+    "image_condition": "CLEAR",
+    "expected_pipeline_behavior": {
+      "image_quality": "ACCEPTED",
+      "ocr_confidence_tier": "HIGH",
+      "declaration_extraction": "MULTIPLE_DATES_PARSED",
+      "rule_engine_action": "DETERMINISTIC_PASS"
+    }
+  },
+  {
+    "id": "CASE-013",
+    "description": "Ink smudged batch code and MRP leading to OCR confidence below 0.65",
+    "image_condition": "INK_SMUDGE",
+    "expected_pipeline_behavior": {
+      "image_quality": "REVIEW",
+      "ocr_confidence_tier": "LOW",
+      "declaration_extraction": "LOW_CONFIDENCE_FLAGGED",
+      "rule_engine_action": "MANUAL_REVIEW_REQUIRED"
+    }
+  },
+  {
+    "id": "CASE-014",
+    "description": "Pharmaceutical/supplement bottle with 4pt fine print declarations",
+    "image_condition": "TINY_FONT",
+    "expected_pipeline_behavior": {
+      "image_quality": "ACCEPTED",
+      "ocr_confidence_tier": "MEDIUM",
+      "declaration_extraction": "HIGH_RESOLUTION_CROPS_NEEDED",
+      "rule_engine_action": "DETERMINISTIC_OR_REVIEW"
+    }
+  },
+  {
+    "id": "CASE-015",
+    "description": "Dark black matte packaging with dark gray text offering low contrast",
+    "image_condition": "LOW_CONTRAST",
+    "expected_pipeline_behavior": {
+      "image_quality": "REVIEW",
+      "ocr_confidence_tier": "MEDIUM_LOW",
+      "declaration_extraction": "CONTRAST_ENHANCEMENT_TRIGGERED",
+      "rule_engine_action": "MANUAL_REVIEW_REQUIRED"
+    }
+  },
+  {
+    "id": "CASE-016",
+    "description": "Metallic foil confectionery wrapper with high specular reflections",
+    "image_condition": "REFLECTIVE_FOIL",
+    "expected_pipeline_behavior": {
+      "image_quality": "REVIEW",
+      "ocr_confidence_tier": "MEDIUM",
+      "declaration_extraction": "MULTI_ANGLE_FUSION_RECOMMENDED",
+      "rule_engine_action": "MANUAL_REVIEW_REQUIRED"
+    }
+  },
+  {
+    "id": "CASE-017",
+    "description": "Inspector photo cropped halfway through the manufacturer address declaration",
+    "image_condition": "CROPPED_EDGE",
+    "expected_pipeline_behavior": {
+      "image_quality": "RECAPTURE_RECOMMENDED",
+      "ocr_confidence_tier": "HIGH_FOR_VISIBLE",
+      "declaration_extraction": "INCOMPLETE_BORDER_DETECTED",
+      "rule_engine_action": "MANUAL_REVIEW_REQUIRED"
+    }
+  },
+  {
+    "id": "CASE-018",
+    "description": "Front-only hero shot of cereal box missing back panel mandatory declarations",
+    "image_condition": "SINGLE_PANEL_ONLY",
+    "expected_pipeline_behavior": {
+      "image_quality": "ACCEPTED",
+      "ocr_confidence_tier": "HIGH",
+      "declaration_extraction": "BACK_PANEL_DECLARATIONS_MISSING",
+      "rule_engine_action": "FAIL_OR_REQUEST_ADDITIONAL_IMAGES"
+    }
+  },
+  {
+    "id": "CASE-019",
+    "description": "Full 4-side inspection scan bundle with front, back, left, right images",
+    "image_condition": "MULTI_IMAGE_COMPLETE",
+    "expected_pipeline_behavior": {
+      "image_quality": "ACCEPTED",
+      "ocr_confidence_tier": "HIGH",
+      "declaration_extraction": "CROSS_PANEL_AGGREGATED",
+      "rule_engine_action": "DETERMINISTIC_PASS"
+    }
+  },
+  {
+    "id": "CASE-020",
+    "description": "Accidental duplicate upload of front panel image in scan bundle",
+    "image_condition": "DUPLICATE_IMAGE",
+    "expected_pipeline_behavior": {
+      "image_quality": "ACCEPTED",
+      "ocr_confidence_tier": "HIGH",
+      "declaration_extraction": "DEDUPLICATION_APPLIED",
+      "rule_engine_action": "DETERMINISTIC_EVALUATION"
+    }
+  }
+]
