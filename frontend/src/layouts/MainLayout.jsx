@@ -2,6 +2,7 @@ import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Navbar from '../components/Navbar';
+import AssistantWidget from '../components/assistant';
 
 const MainLayout = () => {
   return (
@@ -13,8 +14,10 @@ const MainLayout = () => {
           <Outlet />
         </main>
       </div>
+      <AssistantWidget />
     </div>
   );
 };
 
 export default MainLayout;
+

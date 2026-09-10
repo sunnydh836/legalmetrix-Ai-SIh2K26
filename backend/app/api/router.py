@@ -4,6 +4,7 @@ from app.routers.auth import router as auth_router
 from app.routers.scans import router as scans_router
 from app.routers.products import router as products_router
 from app.routers.declarations import router as declarations_router
+from app.assistant.router import router as assistant_router
 
 api_router = APIRouter()
 
@@ -13,3 +14,5 @@ api_router.include_router(auth_router, prefix="", tags=["Authentication"])
 api_router.include_router(scans_router, prefix="", tags=["Scans"])
 api_router.include_router(products_router, prefix="", tags=["Products"])
 api_router.include_router(declarations_router, prefix="", tags=["Declarations"])
+api_router.include_router(assistant_router, prefix="", tags=["AI Assistant"])
+
