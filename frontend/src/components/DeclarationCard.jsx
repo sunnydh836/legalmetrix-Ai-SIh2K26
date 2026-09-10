@@ -27,7 +27,7 @@ const DeclarationCard = ({
     normalized_value,
     confidence = 1.0,
     confidence_level = 'MEDIUM',
-    review_status = 'UNREVIEWED',
+    resolution_status = 'NOT_DETECTED',
     machine_extracted_value,
     reviewed = false,
     reviewed_value,
@@ -36,6 +36,7 @@ const DeclarationCard = ({
     conflict_details = null,
     source_blocks = [],
     image_id,
+    candidate_details = [],
   } = declaration || {};
 
   const [isEditing, setIsEditing] = useState(false);
@@ -49,7 +50,7 @@ const DeclarationCard = ({
     category: 'Other',
   };
   const confStyle = CONFIDENCE_LEVELS[confidence_level] || CONFIDENCE_LEVELS.MEDIUM;
-  const statusStyle = REVIEW_STATUSES[review_status] || REVIEW_STATUSES.UNREVIEWED;
+  const statusStyle = REVIEW_STATUSES[resolution_status] || REVIEW_STATUSES.NOT_DETECTED;
   const confPercent = Math.round(confidence * 100);
 
   const handleConfirm = () => {
@@ -95,8 +96,8 @@ const DeclarationCard = ({
         border: has_conflict
           ? '1.5px solid #f59e0b'
           : reviewed
-          ? `1.5px solid ${statusStyle.border}`
-          : '1px solid var(--border)',
+            ? `1.5px solid ${statusStyle.border}`
+            : '1px solid var(--border)',
         backgroundColor: '#ffffff',
         boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
         transition: 'all 0.15s ease-in-out',
@@ -236,7 +237,7 @@ const DeclarationCard = ({
             <span style={{ fontSize: '11px', fontWeight: 600, color: isEditing ? '#1d4ed8' : '#15803d' }}>
               {isEditing ? 'EDIT NORMALIZED STRUCTURE' : 'NORMALIZED VALUE'}
             </span>
-            {reviewed && review_status === 'CORRECTED' && (
+            {reviewed && reviewed_value && (
               <span style={{ fontSize: '10px', color: '#0369a1', fontWeight: 600 }}>
                 (Human Corrected)
               </span>
@@ -298,11 +299,54 @@ const DeclarationCard = ({
               )}
             </div>
           )}
+
+          {/* Alternative Candidate Selector */}
+          {isEditing && candidate_details && candidate_details.length > 1 && (
+            <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px dashed #cbd5e1' }}>
+              <div style={{ fontSize: '11px', fontWeight: 600, color: '#475569', marginBottom: '8px' }}>
+                ALTERNATIVE EXTRACTED CANDIDATES
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                {candidate_details.map((cand, idx) => (
+                  <div
+                    key={idx}
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      backgroundColor: '#f8fafc',
+                      border: '1px solid #e2e8f0',
+                      borderRadius: '4px',
+                      padding: '6px 8px',
+                      fontSize: '11px',
+                    }}
+                  >
+                    <div style={{ display: 'flex', flexDirection: 'column', maxWidth: '75%' }}>
+                      <span style={{ color: '#1e293b', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {cand.raw_value || JSON.stringify(cand.normalized_value)}
+                      </span>
+                      <span style={{ color: '#64748b', fontSize: '10px' }}>
+                        Conf: {(cand.confidence * 100).toFixed(1)}% | OCR: {(cand.confidence_breakdown?.ocr_confidence * 100).toFixed(0)}%
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={() => setEditJson(JSON.stringify(cand.normalized_value, null, 2))}
+                      style={{ fontSize: '10px', padding: '2px 6px' }}
+                    >
+                      Use
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
       {/* Machine Value vs Human Review Audit Snapshot */}
-      {reviewed && review_status === 'CORRECTED' && machine_extracted_value && (
+      {reviewed && reviewed_value && machine_extracted_value && (
         <div
           style={{
             fontSize: '11px',
@@ -390,7 +434,7 @@ const DeclarationCard = ({
             type="button"
             className="btn"
             onClick={handleConfirm}
-            disabled={isReviewing || review_status === 'CONFIRMED'}
+            disabled={isReviewing || resolution_status === 'CONFIRMED' || resolution_status === 'AUTO_RESOLVED'}
             style={{
               fontSize: '12px',
               padding: '4px 10px',
@@ -403,7 +447,7 @@ const DeclarationCard = ({
             }}
           >
             <CheckCircle2 size={13} />
-            <span>{review_status === 'CONFIRMED' ? 'Confirmed' : 'Confirm'}</span>
+            <span>{(resolution_status === 'CONFIRMED' || resolution_status === 'AUTO_RESOLVED') ? 'Confirmed' : 'Confirm'}</span>
           </button>
         </div>
       </div>

@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 from sqlalchemy import Boolean, Column, DateTime, Enum as SQLEnum, Float, ForeignKey, String, Table, Text
 from sqlalchemy.orm import relationship
 from app.core.database import Base
-from app.core.enums import ConfidenceLevel, DeclarationType, ReviewStatus
+from app.core.enums import ConfidenceLevel, DeclarationType, ResolutionStatus
 from app.models.base import JSONType, generate_uuid_str, get_utc_now
 
 # Many-to-many association table linking declarations to contributing OCR blocks
@@ -31,12 +31,15 @@ class Declaration(Base):
         default=ConfidenceLevel.MEDIUM,
         index=True,
     )
-    review_status = Column(
-        SQLEnum(ReviewStatus, name="review_status_enum", native_enum=False),
+    resolution_status = Column(
+        SQLEnum(ResolutionStatus, name="resolution_status_enum", native_enum=False),
         nullable=False,
-        default=ReviewStatus.UNREVIEWED,
+        default=ResolutionStatus.NOT_DETECTED,
         index=True,
     )
+    resolution_reason = Column(Text, nullable=True)
+    canonical_value = Column(JSONType, nullable=True)
+    candidate_details = Column(JSONType, nullable=True)
     machine_extracted_value = Column(JSONType, nullable=True)
     source_ocr_block_id = Column(String(36), ForeignKey("ocr_blocks.id", ondelete="SET NULL"), nullable=True)
     reviewed = Column(Boolean, default=False, nullable=False)

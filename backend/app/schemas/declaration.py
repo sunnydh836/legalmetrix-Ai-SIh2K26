@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, ConfigDict, Field
-from app.core.enums import ConfidenceLevel, DeclarationType, ReviewStatus
+from app.core.enums import ConfidenceLevel, DeclarationType, ResolutionStatus, ReviewStatus
 
 
 class DeclarationBase(BaseModel):
@@ -11,7 +11,10 @@ class DeclarationBase(BaseModel):
     normalized_value: Optional[Dict[str, Any]] = Field(None, description="Structured parsed value (amount, unit, etc.)")
     confidence: float = Field(..., ge=0.0, le=1.0, description="Extraction confidence score [0.0 - 1.0]")
     confidence_level: ConfidenceLevel = Field(default=ConfidenceLevel.MEDIUM, description="Confidence categorization")
-    review_status: ReviewStatus = Field(default=ReviewStatus.UNREVIEWED, description="Human review status")
+    resolution_status: ResolutionStatus = Field(default=ResolutionStatus.NOT_DETECTED, description="System resolution status")
+    resolution_reason: Optional[str] = Field(None, description="Reason for the current resolution status")
+    canonical_value: Optional[Dict[str, Any]] = Field(None, description="Final canonical structured value")
+    candidate_details: Optional[List[Dict[str, Any]]] = Field(None, description="Detailed list of all candidates and their confidence profiles")
     source_ocr_block_id: Optional[str] = Field(None, description="Foreign key to source OCR block if single block")
     source_blocks: Optional[List[str]] = Field(default_factory=list, description="IDs of all contributing OCR blocks")
     bounding_box: Optional[Dict[str, int]] = Field(None, description="Union bounding box {bbox_x1, bbox_y1, bbox_x2, bbox_y2}")

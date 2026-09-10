@@ -255,12 +255,12 @@ const NewScan = () => {
               prev.map((img) =>
                 img.id === item.id
                   ? {
-                      ...img,
-                      id: uploaded.id,
-                      status: 'UPLOADED',
-                      isPersisted: true,
-                      previewUrl: `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}${uploaded.preview_url}`,
-                    }
+                    ...img,
+                    id: uploaded.id,
+                    status: 'UPLOADED',
+                    isPersisted: true,
+                    previewUrl: `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}${uploaded.preview_url}`,
+                  }
                   : img
               )
             );
@@ -285,7 +285,7 @@ const NewScan = () => {
         const ocrResult = await scanService.processScan(activeScanId);
         setOcrData(ocrResult);
         setScanStatus(ocrResult.status);
-        
+
         // Step 3: Run Declaration Extraction automatically
         setExtractingDeclarations(true);
         try {
@@ -432,17 +432,17 @@ const NewScan = () => {
         const updatedList = prev.declarations.map((d) =>
           d.id === declarationId ? updated : d
         );
-        const unreviewed = updatedList.filter((d) => d.review_status === 'UNREVIEWED').length;
-        const confirmed = updatedList.filter((d) => d.review_status === 'CONFIRMED').length;
-        const corrected = updatedList.filter((d) => d.review_status === 'CORRECTED').length;
-        const rejected = updatedList.filter((d) => d.review_status === 'REJECTED').length;
+        const unreviewed = updatedList.filter((d) => d.resolution_status === 'NEEDS_REVIEW' || d.resolution_status === 'CONFLICT').length;
+        const confirmed = updatedList.filter((d) => d.resolution_status === 'CONFIRMED').length;
+        const autoResolved = updatedList.filter((d) => d.resolution_status === 'AUTO_RESOLVED').length;
+        const rejected = updatedList.filter((d) => d.resolution_status === 'REJECTED').length;
 
         return {
           ...prev,
           declarations: updatedList,
           unreviewed_count: unreviewed,
-          confirmed_count: confirmed,
-          corrected_count: corrected,
+          confirmed_count: confirmed + autoResolved,
+          corrected_count: 0,
           rejected_count: rejected,
         };
       });
@@ -497,11 +497,11 @@ const NewScan = () => {
   // Filter declarations
   const filteredDeclarations = declarationsData?.declarations?.filter((d) => {
     if (activeDeclFilter === 'ALL') return true;
-    if (activeDeclFilter === 'UNREVIEWED') return d.review_status === 'UNREVIEWED';
-    if (activeDeclFilter === 'CONFIRMED') return d.review_status === 'CONFIRMED';
-    if (activeDeclFilter === 'CORRECTED') return d.review_status === 'CORRECTED';
-    if (activeDeclFilter === 'REJECTED') return d.review_status === 'REJECTED';
-    if (activeDeclFilter === 'CONFLICT') return d.has_conflict;
+    if (activeDeclFilter === 'NEEDS_REVIEW') return d.resolution_status === 'NEEDS_REVIEW';
+    if (activeDeclFilter === 'CONFIRMED') return d.resolution_status === 'CONFIRMED';
+    if (activeDeclFilter === 'AUTO_RESOLVED') return d.resolution_status === 'AUTO_RESOLVED';
+    if (activeDeclFilter === 'REJECTED') return d.resolution_status === 'REJECTED';
+    if (activeDeclFilter === 'CONFLICT') return d.resolution_status === 'CONFLICT' || d.has_conflict;
     return true;
   }) || [];
 
@@ -536,7 +536,7 @@ const NewScan = () => {
       };
     }
 
-    const hasConfirmed = matching.some((d) => d.review_status === 'CONFIRMED');
+    const hasConfirmed = matching.some((d) => d.resolution_status === 'CONFIRMED' || d.resolution_status === 'AUTO_RESOLVED');
     if (hasConfirmed) {
       return {
         ...item,
@@ -549,20 +549,7 @@ const NewScan = () => {
       };
     }
 
-    const hasCorrected = matching.some((d) => d.review_status === 'CORRECTED');
-    if (hasCorrected) {
-      return {
-        ...item,
-        status: 'CORRECTED',
-        badgeText: 'Detected — Corrected',
-        color: '#0369a1',
-        bg: '#e0f2fe',
-        border: '#7dd3fc',
-        matchingCount: matching.length,
-      };
-    }
-
-    const allRejected = matching.every((d) => d.review_status === 'REJECTED');
+    const allRejected = matching.every((d) => d.resolution_status === 'REJECTED');
     if (allRejected) {
       return {
         ...item,
@@ -578,7 +565,7 @@ const NewScan = () => {
     // Default for active unreviewed declaration
     return {
       ...item,
-      status: 'UNREVIEWED',
+      status: 'NEEDS_REVIEW',
       badgeText: 'Detected — Needs Review',
       color: '#b45309',
       bg: '#fef3c7',
@@ -919,8 +906,8 @@ const NewScan = () => {
                       scanStatus === 'DECLARATIONS_EXTRACTED'
                         ? '#16a34a'
                         : scanStatus === 'OCR_COMPLETED'
-                        ? '#0284c7'
-                        : '#64748b',
+                          ? '#0284c7'
+                          : '#64748b',
                   }}
                 >
                   {scanStatus || 'NOT_CREATED'}
@@ -1030,7 +1017,7 @@ const NewScan = () => {
             <span style={{ fontSize: '12px', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '4px' }}>
               <Filter size={13} /> Filter:
             </span>
-            {['ALL', 'UNREVIEWED', 'CONFIRMED', 'CORRECTED', 'REJECTED', 'CONFLICT'].map((filterKey) => (
+            {['ALL', 'NEEDS_REVIEW', 'CONFLICT', 'AUTO_RESOLVED', 'CONFIRMED', 'REJECTED'].map((filterKey) => (
               <button
                 key={filterKey}
                 type="button"
@@ -1278,13 +1265,13 @@ const NewScan = () => {
                               backgroundColor: isSelected
                                 ? '#eff6ff'
                                 : isHovered
-                                ? '#f8fafc'
-                                : '#ffffff',
+                                  ? '#f8fafc'
+                                  : '#ffffff',
                               border: isSelected
                                 ? '1.5px solid #3b82f6'
                                 : isHovered
-                                ? '1.5px solid #93c5fd'
-                                : '1px solid var(--border)',
+                                  ? '1.5px solid #93c5fd'
+                                  : '1px solid var(--border)',
                               cursor: 'pointer',
                               transition: 'all 0.12s ease-in-out',
                             }}
@@ -1304,14 +1291,14 @@ const NewScan = () => {
                                       block.confidence >= 0.8
                                         ? '#dcfce7'
                                         : block.confidence >= 0.6
-                                        ? '#fef3c7'
-                                        : '#fee2e2',
+                                          ? '#fef3c7'
+                                          : '#fee2e2',
                                     color:
                                       block.confidence >= 0.8
                                         ? '#15803d'
                                         : block.confidence >= 0.6
-                                        ? '#b45309'
-                                        : '#b91c1c',
+                                          ? '#b45309'
+                                          : '#b91c1c',
                                   }}
                                 >
                                   {confPercent}% {block.confidence < 0.6 ? '(Review)' : ''}

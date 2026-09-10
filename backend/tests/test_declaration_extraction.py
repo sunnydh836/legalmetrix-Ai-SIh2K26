@@ -18,6 +18,7 @@ from app.services.declaration_extraction import (
     normalize_mrp,
     normalize_net_quantity,
     normalize_phone,
+    DECLARATION_EXTRACTOR_VERSION,
 )
 
 
@@ -275,7 +276,7 @@ def test_extract_declarations_api_success(client: TestClient, scan_with_ocr_bloc
 
     assert data["scan_id"] == scan_id
     assert data["total_declarations"] >= 4
-    assert data["extractor_version"] == "1.0.0"
+    assert data["extractor_version"] == DECLARATION_EXTRACTOR_VERSION
 
     types = [d["declaration_type"] for d in data["declarations"]]
     assert "MRP" in types
@@ -330,7 +331,7 @@ def test_reviewer_workflow_and_machine_preservation(client: TestClient, scan_wit
     )
     assert patch_resp.status_code == 200
     updated = patch_resp.json()
-    assert updated["review_status"] == "CORRECTED"
+    assert updated["resolution_status"] == "CONFIRMED"
     assert updated["reviewed"] is True
     assert updated["reviewed_value"]["amount"] == 150.0
     # Machine extracted value remains strictly preserved as 149.0!
@@ -340,7 +341,7 @@ def test_reviewer_workflow_and_machine_preservation(client: TestClient, scan_wit
     re_extract_resp = client.post(f"/api/v1/scans/{scan_id}/extract-declarations", headers=inspector_headers)
     assert re_extract_resp.status_code == 200
     refreshed_mrp = next(d for d in re_extract_resp.json()["declarations"] if d["declaration_type"] == "MRP")
-    assert refreshed_mrp["review_status"] == "CORRECTED"
+    assert refreshed_mrp["resolution_status"] == "CONFIRMED"
     assert refreshed_mrp["reviewed_value"]["amount"] == 150.0
 
 
@@ -696,4 +697,205 @@ def test_taxonomy_enum_mappings_consistency():
 
 
 
+
+
+
+
+def test_day5_batch_strictness():
+    from app.services.declaration_extraction.extractor import DeclarationExtractor
+    from app.services.declaration_extraction.grouping import TextSpan
+    
+    import re
+    
+    extractor = DeclarationExtractor()
+    blocks1 = [MockOCRBlock("b1", "Batch No. printed on the pack", 0.99, 10, 10, 150, 30)]
+    blocks2 = [MockOCRBlock("b2", "STREET, KOLKATA-700017, WEST BENGAL", 0.99, 10, 10, 150, 30)]
+    blocks3 = [MockOCRBlock("b3", "BILIREGN.NO.BO-23-000-08-AABCB2066P-22", 0.99, 10, 10, 150, 30)]
+    blocks4 = [MockOCRBlock("b4", "LOT No.", 0.99, 10, 10, 80, 30)]
+    blocks5 = [MockOCRBlock("b5", "Batch No. AB23K91", 0.99, 10, 10, 100, 30)]
+    
+    c1 = extractor.extract_from_image_blocks("img", "FRONT", blocks1)
+    assert not any(c.declaration_type.value == "BATCH_OR_LOT_NUMBER" for c in c1)
+    
+    c2 = extractor.extract_from_image_blocks("img", "FRONT", blocks2)
+    assert not any(c.declaration_type.value == "BATCH_OR_LOT_NUMBER" for c in c2)
+    
+    c3 = extractor.extract_from_image_blocks("img", "FRONT", blocks3)
+    assert not any(c.declaration_type.value == "BATCH_OR_LOT_NUMBER" for c in c3)
+    
+    c4 = extractor.extract_from_image_blocks("img", "FRONT", blocks4)
+    assert not any(c.declaration_type.value == "BATCH_OR_LOT_NUMBER" for c in c4)
+    
+    c5 = extractor.extract_from_image_blocks("img", "FRONT", blocks5)
+    batch_cand = next(c for c in c5 if c.declaration_type.value == "BATCH_OR_LOT_NUMBER")
+    assert batch_cand.raw_value == "AB23K91"
+
+def test_day5_cross_field_exclusivity():
+    from app.services.declaration_extraction.extractor import DeclarationExtractor
+    
+    extractor = DeclarationExtractor()
+    
+    blocks1 = [MockOCRBlock("b1", "10Nx82.7g=827g", 0.99, 10, 10, 150, 30)]
+    c1 = extractor.extract_from_image_blocks("img", "FRONT", blocks1)
+    has_net = any(c.declaration_type.value == "NET_QUANTITY" for c in c1)
+    has_batch = any(c.declaration_type.value == "BATCH_OR_LOT_NUMBER" for c in c1)
+    assert has_net
+    assert not has_batch
+    
+    blocks2 = [MockOCRBlock("b2", "1-800-4254449", 0.99, 10, 10, 150, 30)]
+    c2 = extractor.extract_from_image_blocks("img", "FRONT", blocks2)
+    has_phone = any(c.declaration_type.value == "CONSUMER_CARE_PHONE" for c in c2)
+    has_batch2 = any(c.declaration_type.value == "BATCH_OR_LOT_NUMBER" for c in c2)
+    assert has_phone
+    assert not has_batch2
+
+def test_day5_entity_segmentation():
+    from app.services.declaration_extraction.extractor import DeclarationExtractor
+    
+    import re
+    extractor = DeclarationExtractor()
+    
+    blocks = [
+        MockOCRBlock("b1", "Marketed By:", 0.99, 10, 10, 150, 30),
+        MockOCRBlock("b2", "BRITANNIA INDUSTRIES LTD.,", 0.99, 10, 50, 150, 70),
+        MockOCRBlock("b3", "5/1A HUNGERFORD STREET, KOLKATA-700017", 0.99, 10, 90, 150, 110)
+    ]
+    c = extractor.extract_from_image_blocks("img", "FRONT", blocks)
+    
+    name_cands = sorted([cand for cand in c if cand.declaration_type.value == "MARKETER_NAME" and cand.raw_value], key=lambda x: x.confidence, reverse=True)
+    name_cand = name_cands[0]
+    addr_cands = sorted([cand for cand in c if cand.declaration_type.value == "MARKETER_ADDRESS" and cand.raw_value], key=lambda x: x.confidence, reverse=True)
+    addr_cand = addr_cands[0] if addr_cands else None
+    
+    assert name_cand.raw_value == "BRITANNIA INDUSTRIES LTD."
+    assert addr_cand is not None
+    assert addr_cand.raw_value == "5/1A HUNGERFORD STREET, KOLKATA-700017"
+    
+def test_day5_date_spatial_association():
+    from app.services.declaration_extraction.extractor import DeclarationExtractor
+    
+    import pytest
+    extractor = DeclarationExtractor()
+    
+    blocks = [
+        MockOCRBlock("b1", "PKD.", 0.99, 10, 10, 50, 30),
+        MockOCRBlock("b2", "08/2026", 0.99, 60, 10, 150, 30)
+    ]
+    c = extractor.extract_from_image_blocks("img", "FRONT", blocks)
+    date_cand = next((cand for cand in c if cand.declaration_type.value == "DATE_OF_PACKING"), None)
+    assert date_cand is not None
+    assert date_cand.raw_value == "08/2026"
+    assert date_cand.confidence_breakdown.get("spatial_relation") == "nearby_block"
+
+# -------------------------------------------------------------------
+# Day 5 Hardening: 5 Unseen Packages Generalization Test
+# -------------------------------------------------------------------
+
+def test_unseen_package_1_food_pouch():
+    """Unseen A: Food pouch with Indian MRP, multipack weight, and FSSAI"""
+    from app.services.declaration_extraction.extractor import DeclarationExtractor
+    extractor = DeclarationExtractor()
+    blocks = [
+        MockOCRBlock("b1", "Haldiram's Bhujia", 0.99, 10, 10, 200, 30),
+        MockOCRBlock("b2", "NET WEIGHT 5 N x 200 g = 1 kg", 0.96, 10, 50, 300, 80),
+        MockOCRBlock("b3", "MRP Rs 250/- (Incl. of all taxes)", 0.98, 10, 100, 280, 130),
+        MockOCRBlock("b4", "Lic. No. 10012022000213", 0.95, 10, 150, 250, 180),
+        MockOCRBlock("b5", "Batch No. BJU459", 0.97, 10, 200, 200, 230),
+    ]
+    c = extractor.extract_from_image_blocks("up1", "BACK", blocks)
+    by_type = {cand.declaration_type.value: cand for cand in c}
+    
+    assert by_type["NET_QUANTITY"].normalized_value["canonical_value"] == 1000
+    assert by_type["MRP"].normalized_value["amount"] == 250.0
+    assert "BATCH_OR_LOT_NUMBER" in by_type
+    assert by_type["BATCH_OR_LOT_NUMBER"].raw_value == "BJU459"
+    assert "CONSUMER_CARE_PHONE" not in by_type
+
+
+def test_unseen_package_2_cosmetic():
+    """Unseen B: Cosmetic with Batch instruction, ml volume, and Mfg date"""
+    from app.services.declaration_extraction.extractor import DeclarationExtractor
+    extractor = DeclarationExtractor()
+    blocks = [
+        MockOCRBlock("b1", "Generic Name: Body Wash", 0.95, 10, 10, 200, 30),
+        MockOCRBlock("b2", "Net Vol. 250 ml", 0.97, 10, 50, 150, 80),
+        MockOCRBlock("b3", "Mfg. Date: 12/2025", 0.98, 10, 100, 180, 130),
+        MockOCRBlock("b4", "See bottom for Batch No.", 0.95, 10, 150, 250, 180),
+        MockOCRBlock("b5", "Marketed By: ABC Cosmetics LLP", 0.99, 10, 200, 300, 230),
+        MockOCRBlock("b6", "Mumbai 400001", 0.99, 10, 240, 150, 270),
+    ]
+    c = extractor.extract_from_image_blocks("up2", "FRONT", blocks)
+    by_type = {cand.declaration_type.value: cand for cand in c}
+    
+    assert by_type["NET_QUANTITY"].normalized_value["value"] == 250
+    assert by_type["DATE_OF_MANUFACTURE"].normalized_value["date"] == "2025-12"
+    assert "BATCH_OR_LOT_NUMBER" not in by_type  # Should reject instruction
+    assert "ABC Cosmetics LLP" in by_type["MARKETER_NAME"].raw_value
+
+
+def test_unseen_package_3_electronic():
+    """Unseen C: Electronic product with Country of Origin, SKU, and Price"""
+    from app.services.declaration_extraction.extractor import DeclarationExtractor
+    extractor = DeclarationExtractor()
+    blocks = [
+        MockOCRBlock("b1", "Name of Commodity", 0.98, 10, 10, 180, 30),
+        MockOCRBlock("b2", "Wireless Mouse", 0.99, 10, 40, 180, 70),
+        MockOCRBlock("b3", "SKU: M-8930", 0.95, 10, 80, 150, 110),
+        MockOCRBlock("b4", "Net Quantity: 1U", 0.98, 10, 120, 180, 150),
+        MockOCRBlock("b5", "Country of Origin", 0.99, 10, 160, 180, 190),
+        MockOCRBlock("b6", "Vietnam", 0.98, 10, 200, 150, 230),
+        MockOCRBlock("b7", "Maximum Retail Price ₹1,299", 0.97, 10, 240, 300, 270),
+    ]
+    c = extractor.extract_from_image_blocks("up3", "BACK", blocks)
+    by_type = {cand.declaration_type.value: cand for cand in c}
+    
+    assert by_type["COMMODITY_NAME"].normalized_value["commodity_name"] == "Wireless Mouse"
+    assert by_type["NET_QUANTITY"].normalized_value["value"] == 1
+    assert by_type["COUNTRY_OF_ORIGIN"].normalized_value["country"] == "Vietnam"
+    assert by_type["MRP"].normalized_value["amount"] == 1299.0
+
+
+def test_unseen_package_4_fmcg():
+    """Unseen D: Household detergent with email, multi-line address, grouping commas in price"""
+    from app.services.declaration_extraction.extractor import DeclarationExtractor
+    extractor = DeclarationExtractor()
+    blocks = [
+        MockOCRBlock("b1", "Detergent Powder", 0.98, 10, 10, 180, 30),
+        MockOCRBlock("b2", "MRP: ₹3,500.00 (inclusive of taxes)", 0.99, 10, 50, 350, 80),
+        MockOCRBlock("b3", "Manufactured & Marketed By:", 0.96, 10, 90, 280, 120),
+        MockOCRBlock("b4", "CleanCo Enterprises Private Limited", 0.99, 10, 130, 320, 160),
+        MockOCRBlock("b5", "Plot 42, Sector 5", 0.99, 10, 170, 200, 200),
+        MockOCRBlock("b6", "Gurugram, Haryana - 122001", 0.99, 10, 210, 250, 240),
+        MockOCRBlock("b7", "Email: help@cleanco.in", 0.98, 10, 250, 250, 280),
+    ]
+    c = extractor.extract_from_image_blocks("up4", "BACK", blocks)
+    by_type = {cand.declaration_type.value: cand for cand in c}
+    
+    assert by_type["MRP"].normalized_value["amount"] == 3500.0
+    assert "CleanCo" in by_type["MANUFACTURER_NAME"].raw_value
+    assert "MARKETER_NAME" in by_type
+    assert "Haryana" in by_type["MANUFACTURER_ADDRESS"].raw_value
+    assert by_type["CONSUMER_CARE_EMAIL"].normalized_value["email"] == "help@cleanco.in"
+
+
+def test_unseen_package_5_structural():
+    """Unseen E: Different packaged commodity (Hardware tool) with pieces count and explicit Mfd"""
+    from app.services.declaration_extraction.extractor import DeclarationExtractor
+    extractor = DeclarationExtractor()
+    blocks = [
+        MockOCRBlock("b1", "Steel Screws 10mm", 0.98, 10, 10, 200, 30),
+        MockOCRBlock("b2", "Quantity: 50 Pieces", 0.96, 10, 50, 200, 80),
+        MockOCRBlock("b3", "MFG: Nov 2025", 0.95, 10, 90, 150, 120),
+        MockOCRBlock("b4", "Imported By: Hardware India Ltd.", 0.99, 10, 130, 320, 160),
+        MockOCRBlock("b5", "Made in Taiwan", 0.98, 10, 170, 200, 200),
+        MockOCRBlock("b6", "MRP: Rs. 499/-", 0.97, 10, 210, 200, 240),
+    ]
+    c = extractor.extract_from_image_blocks("up5", "FRONT", blocks)
+    by_type = {cand.declaration_type.value: cand for cand in c}
+    
+    assert by_type["NET_QUANTITY"].normalized_value["value"] == 50
+    assert by_type["DATE_OF_MANUFACTURE"].normalized_value["date"] == "2025-11"
+    assert "Hardware India" in by_type["IMPORTER_NAME"].raw_value
+    assert by_type["COUNTRY_OF_ORIGIN"].normalized_value["country"] == "Taiwan"
+    assert by_type["MRP"].normalized_value["amount"] == 499.0
 

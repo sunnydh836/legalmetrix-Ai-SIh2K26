@@ -1,4 +1,4 @@
-"""Declaration Extraction and Normalization package."""
+"""Declaration Extraction and Normalization package — v1.5.0."""
 from app.services.declaration_extraction.version import DECLARATION_EXTRACTOR_VERSION
 from app.services.declaration_extraction.extractor import DeclarationExtractor, ExtractedCandidate
 from app.services.declaration_extraction.normalizers import (
@@ -24,6 +24,12 @@ from app.services.declaration_extraction.grouping import (
     generate_candidate_text_spans,
 )
 from app.services.declaration_extraction.evaluator import evaluate_declaration_benchmark
+from app.services.declaration_extraction.patterns import (
+    is_nutrition_context,
+    is_instruction_only,
+    is_weight_or_measure_context,
+    has_address_indicator,
+)
 
 __all__ = [
     "DECLARATION_EXTRACTOR_VERSION",
@@ -46,4 +52,8 @@ __all__ = [
     "cluster_blocks_into_lines",
     "generate_candidate_text_spans",
     "evaluate_declaration_benchmark",
+    "is_nutrition_context",
+    "is_instruction_only",
+    "is_weight_or_measure_context",
+    "has_address_indicator",
 ]

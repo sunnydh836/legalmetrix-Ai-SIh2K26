@@ -10,6 +10,9 @@ export const DECLARATION_TAXONOMY = {
   IMPORTER_NAME: { label: 'Importer Name', category: 'Entity' },
   IMPORTER_ADDRESS: { label: 'Importer Address', category: 'Entity' },
   IMPORTER: { label: 'Importer Details', category: 'Entity' },
+  MARKETER_NAME: { label: 'Marketer Name', category: 'Entity' },
+  MARKETER_ADDRESS: { label: 'Marketer Address', category: 'Entity' },
+  MARKETER: { label: 'Marketer Details', category: 'Entity' },
   COUNTRY_OF_ORIGIN: { label: 'Country of Origin', category: 'Origin' },
   COMMODITY_NAME: { label: 'Generic Commodity Name', category: 'Product' },
   DATE_OF_MANUFACTURE: { label: 'Date of Manufacture', category: 'Dates' },
@@ -40,6 +43,8 @@ export const TAXONOMY_CHECKLIST_ITEMS = [
   { key: 'PACKER_ADDRESS', label: 'Packer Address', category: 'Entity' },
   { key: 'IMPORTER_NAME', label: 'Importer Name', category: 'Entity', aliasKeys: ['IMPORTER'] },
   { key: 'IMPORTER_ADDRESS', label: 'Importer Address', category: 'Entity' },
+  { key: 'MARKETER_NAME', label: 'Marketer Name', category: 'Entity', aliasKeys: ['MARKETER'] },
+  { key: 'MARKETER_ADDRESS', label: 'Marketer Address', category: 'Entity' },
   { key: 'COUNTRY_OF_ORIGIN', label: 'Country of Origin', category: 'Origin' },
   { key: 'CONSUMER_CARE_PHONE', label: 'Consumer Care Phone', category: 'Consumer Care' },
   { key: 'CONSUMER_CARE_EMAIL', label: 'Consumer Care Email', category: 'Consumer Care' },
@@ -48,10 +53,12 @@ export const TAXONOMY_CHECKLIST_ITEMS = [
 ];
 
 export const REVIEW_STATUSES = {
-  UNREVIEWED: { label: 'Unreviewed', color: '#475569', bg: '#f1f5f9', border: '#cbd5e1' },
+  NOT_DETECTED: { label: 'Not Detected', color: '#64748b', bg: '#f1f5f9', border: '#cbd5e1' },
+  NEEDS_REVIEW: { label: 'Needs Review', color: '#b45309', bg: '#fef3c7', border: '#fde68a' },
+  CONFLICT: { label: 'Conflict', color: '#b91c1c', bg: '#fee2e2', border: '#fca5a5' },
+  AUTO_RESOLVED: { label: 'Auto-Resolved', color: '#0369a1', bg: '#e0f2fe', border: '#7dd3fc' },
   CONFIRMED: { label: 'Confirmed', color: '#15803d', bg: '#dcfce7', border: '#86efac' },
-  CORRECTED: { label: 'Corrected', color: '#0369a1', bg: '#e0f2fe', border: '#7dd3fc' },
-  REJECTED: { label: 'Rejected', color: '#b91c1c', bg: '#fee2e2', border: '#fca5a5' },
+  REJECTED: { label: 'Rejected', color: '#dc2626', bg: '#fef2f2', border: '#fecaca' },
 };
 
 export const CONFIDENCE_LEVELS = {

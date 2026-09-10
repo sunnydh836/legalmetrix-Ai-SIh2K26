@@ -5,7 +5,7 @@ from app.core.constants import (
     DEFAULT_CONFIDENCE_THRESHOLD_REVIEW,
     DEFAULT_RULE_SET_VERSION,
 )
-from app.core.enums import ComplianceStatus, DeclarationType, ReasonCode, RuleSeverity, RuleType
+from app.core.enums import ComplianceStatus, DeclarationType, ReasonCode, RuleSeverity, RuleType, ResolutionStatus
 from app.schemas.compliance import (
     ComplianceFindingBase,
     ComplianceFindingResponse,
@@ -47,9 +47,15 @@ class DeterministicRuleService(RuleServiceInterface):
         product_metadata = product_metadata or {}
 
         # Index declarations by type for fast lookup
+        # Only input AUTO_RESOLVED and CONFIRMED declarations to the engine logic
         decl_by_type: Dict[DeclarationType, List[DeclarationBase]] = {}
+        unresolved_declarations = False
+
         for decl in declarations:
-            decl_by_type.setdefault(decl.declaration_type, []).append(decl)
+            if decl.resolution_status in [ResolutionStatus.AUTO_RESOLVED, ResolutionStatus.CONFIRMED]:
+                decl_by_type.setdefault(decl.declaration_type, []).append(decl)
+            elif decl.resolution_status in [ResolutionStatus.NEEDS_REVIEW, ResolutionStatus.CONFLICT]:
+                unresolved_declarations = True
 
         # Baseline rule definitions (Mock representation of Legal Metrology Rule checks)
         sample_rules = [
@@ -177,7 +183,7 @@ class DeterministicRuleService(RuleServiceInterface):
         overall = ComplianceStatus.PASS
         if failed > 0:
             overall = ComplianceStatus.FAIL
-        elif review > 0:
+        elif review > 0 or unresolved_declarations:
             overall = ComplianceStatus.REVIEW
 
         return ComplianceResult(

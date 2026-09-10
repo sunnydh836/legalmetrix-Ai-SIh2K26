@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Optional
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session, joinedload
 
-from app.core.enums import ConfidenceLevel, DeclarationType, ReviewStatus, ScanStatus, UserRole
+from app.core.enums import ConfidenceLevel, DeclarationType, ReviewStatus, ScanStatus, UserRole, ResolutionStatus
 from app.models.declaration import Declaration
 from app.models.ocr_block import OCRBlock
 from app.models.scan_image import ScanImage
@@ -18,12 +18,14 @@ from app.schemas.declaration import (
     DeclarationReviewUpdate,
     ScanDeclarationsResponse,
 )
+from app.services.declaration_extraction.resolver import resolve_declaration
 from app.services.audit_service import log_audit_event
 from abc import ABC, abstractmethod
 from app.services.declaration_extraction import (
     DECLARATION_EXTRACTOR_VERSION,
     DeclarationExtractor,
 )
+from app.services.declaration_extraction.extractor import ExtractedCandidate
 from app.schemas.declaration import DeclarationBase
 from app.schemas.ocr import OCRResult
 
@@ -97,7 +99,10 @@ def _to_declaration_response(d: Declaration) -> DeclarationResponse:
         normalized_value=d.normalized_value,
         confidence=d.confidence,
         confidence_level=d.confidence_level,
-        review_status=d.review_status,
+        resolution_status=d.resolution_status,
+        resolution_reason=d.resolution_reason,
+        canonical_value=d.canonical_value,
+        candidate_details=d.candidate_details,
         machine_extracted_value=d.machine_extracted_value,
         reviewed=d.reviewed,
         reviewed_value=d.reviewed_value,
@@ -197,66 +202,110 @@ class DeclarationService:
         reviewed_map: Dict[DeclarationType, Declaration] = {
             d.declaration_type: d
             for d in existing_declarations
-            if d.reviewed or d.review_status != ReviewStatus.UNREVIEWED
+            if d.reviewed or d.resolution_status in [ResolutionStatus.CONFIRMED, ResolutionStatus.REJECTED]
         }
 
         # Delete only unreviewed existing declarations to avoid duplicate noise
         for old_decl in existing_declarations:
-            if not old_decl.reviewed and old_decl.review_status == ReviewStatus.UNREVIEWED:
+            if not old_decl.reviewed and old_decl.resolution_status not in [ResolutionStatus.CONFIRMED, ResolutionStatus.REJECTED]:
                 db.delete(old_decl)
         db.flush()
 
         persisted_declarations: List[Declaration] = []
 
+        # Group candidates by type
+        from collections import defaultdict
+        grouped_candidates = defaultdict(list)
         for cand in candidates:
+            grouped_candidates[cand.declaration_type].append(cand)
+            
+
+        
+        # We need to process all recognized declaration types
+        all_types = list(DeclarationType)
+        
+        for dtype in all_types:
+            if dtype in [DeclarationType.UNKNOWN, DeclarationType.OTHER]:
+                continue
+                
+            type_cands = grouped_candidates.get(dtype, [])
+            resolved = resolve_declaration(dtype, type_cands)
+            
             # Check if this type already has a human review
-            existing_reviewed = reviewed_map.get(cand.declaration_type)
+            existing_reviewed = reviewed_map.get(dtype)
 
             if existing_reviewed:
                 # Update machine snapshot and evidence while keeping human review intact!
-                existing_reviewed.raw_text = cand.raw_text
-                existing_reviewed.raw_value = cand.raw_value
-                existing_reviewed.machine_extracted_value = cand.normalized_value
-                existing_reviewed.confidence = cand.confidence
-                existing_reviewed.confidence_level = cand.confidence_level
-                existing_reviewed.confidence_breakdown = cand.confidence_breakdown
-                existing_reviewed.image_id = cand.scan_image_id
-                existing_reviewed.bounding_box = cand.union_bounding_box
-                existing_reviewed.has_conflict = cand.has_conflict
-                existing_reviewed.conflict_details = cand.conflict_details
+                # We update the machine output with the new canonical result
+                if type_cands:
+                    best_cand = max(type_cands, key=lambda c: c.confidence)
+                    existing_reviewed.raw_text = best_cand.raw_text
+                    existing_reviewed.raw_value = best_cand.raw_value
+                    existing_reviewed.image_id = best_cand.scan_image_id
+                    existing_reviewed.bounding_box = best_cand.union_bounding_box
+                    existing_reviewed.has_conflict = best_cand.has_conflict
+                    existing_reviewed.conflict_details = best_cand.conflict_details
+                    existing_reviewed.ocr_blocks = best_cand.blocks
+                    if best_cand.blocks:
+                        existing_reviewed.source_ocr_block_id = best_cand.blocks[0].id
+                else:
+                    existing_reviewed.raw_text = ""
+                    existing_reviewed.raw_value = ""
+                    existing_reviewed.image_id = None
+                    existing_reviewed.bounding_box = None
+                    existing_reviewed.has_conflict = False
+                    existing_reviewed.conflict_details = None
+                    existing_reviewed.ocr_blocks = []
+                    existing_reviewed.source_ocr_block_id = None
+                
+                existing_reviewed.machine_extracted_value = resolved.get("canonical_value")
+                existing_reviewed.confidence = resolved.get("confidence", 0.0)
+                existing_reviewed.confidence_level = resolved.get("confidence_level", ConfidenceLevel.LOW)
+                # DO NOT overwrite resolution_status for already reviewed items
+                existing_reviewed.resolution_reason = "Machine extraction updated; human review preserved."
+                existing_reviewed.canonical_value = existing_reviewed.reviewed_value or resolved.get("canonical_value")
+                existing_reviewed.candidate_details = resolved.get("candidate_details")
                 existing_reviewed.extractor_version = self.extractor.version
                 existing_reviewed.updated_at = get_utc_now()
-                # Update associated blocks
-                existing_reviewed.ocr_blocks = cand.blocks
-                if cand.blocks:
-                    existing_reviewed.source_ocr_block_id = cand.blocks[0].id
+                
                 persisted_declarations.append(existing_reviewed)
             else:
                 # Create new machine extracted declaration
-                first_block_id = cand.blocks[0].id if cand.blocks else None
+                if resolved.get("resolution_status") == ResolutionStatus.NOT_DETECTED:
+                    continue # Do not create rows for entirely missing fields initially, only if we want
+                    
+                best_cand = None
+                if type_cands:
+                    best_cand = max(type_cands, key=lambda c: c.confidence)
+                
+                first_block_id = best_cand.blocks[0].id if best_cand and best_cand.blocks else None
                 new_decl = Declaration(
                     scan_session_id=scan_id,
-                    image_id=cand.scan_image_id,
-                    declaration_type=cand.declaration_type,
-                    raw_text=cand.raw_text,
-                    raw_value=cand.raw_value,
-                    normalized_value=cand.normalized_value,
-                    confidence=cand.confidence,
-                    confidence_level=cand.confidence_level,
-                    review_status=ReviewStatus.UNREVIEWED,
-                    machine_extracted_value=cand.normalized_value,
+                    image_id=best_cand.scan_image_id if best_cand else None,
+                    declaration_type=dtype,
+                    raw_text=best_cand.raw_text if best_cand else "",
+                    raw_value=best_cand.raw_value if best_cand else "",
+                    normalized_value=resolved.get("canonical_value"),
+                    confidence=resolved.get("confidence", 0.0),
+                    confidence_level=resolved.get("confidence_level", ConfidenceLevel.LOW),
+                    resolution_status=resolved.get("resolution_status"),
+                    resolution_reason=resolved.get("resolution_reason"),
+                    canonical_value=resolved.get("canonical_value"),
+                    candidate_details=resolved.get("candidate_details"),
+                    machine_extracted_value=resolved.get("canonical_value"),
                     source_ocr_block_id=first_block_id,
                     reviewed=False,
                     reviewed_value=None,
                     extractor_version=self.extractor.version,
-                    bounding_box=cand.union_bounding_box,
-                    confidence_breakdown=cand.confidence_breakdown,
-                    has_conflict=cand.has_conflict,
-                    conflict_details=cand.conflict_details,
+                    bounding_box=best_cand.union_bounding_box if best_cand else None,
+                    confidence_breakdown=best_cand.confidence_breakdown if best_cand else None,
+                    has_conflict=best_cand.has_conflict if best_cand else False,
+                    conflict_details=best_cand.conflict_details if best_cand else None,
                     created_at=get_utc_now(),
                     updated_at=get_utc_now(),
                 )
-                new_decl.ocr_blocks = cand.blocks
+                if best_cand:
+                    new_decl.ocr_blocks = best_cand.blocks
                 db.add(new_decl)
                 persisted_declarations.append(new_decl)
 
@@ -322,10 +371,10 @@ class DeclarationService:
 
         responses = [_to_declaration_response(d) for d in declarations]
 
-        unreviewed = sum(1 for d in declarations if d.review_status == ReviewStatus.UNREVIEWED)
-        confirmed = sum(1 for d in declarations if d.review_status == ReviewStatus.CONFIRMED)
-        corrected = sum(1 for d in declarations if d.review_status == ReviewStatus.CORRECTED)
-        rejected = sum(1 for d in declarations if d.review_status == ReviewStatus.REJECTED)
+        unreviewed = sum(1 for d in declarations if d.resolution_status in [ResolutionStatus.NEEDS_REVIEW, ResolutionStatus.CONFLICT])
+        confirmed = sum(1 for d in declarations if d.resolution_status == ResolutionStatus.CONFIRMED)
+        corrected = 0 # Not applicable
+        rejected = sum(1 for d in declarations if d.resolution_status == ResolutionStatus.REJECTED)
 
         return ScanDeclarationsResponse(
             scan_id=scan_id,
@@ -363,27 +412,30 @@ class DeclarationService:
                 detail=f"Declaration '{declaration_id}' not found.",
             )
 
-        previous_status = decl.review_status.value if hasattr(decl.review_status, "value") else str(decl.review_status)
+        previous_status = decl.resolution_status.value if hasattr(decl.resolution_status, "value") else str(decl.resolution_status)
 
-        decl.review_status = review_in.review_status
-        decl.reviewed = True
-        decl.reviewed_by = user_id
-        decl.reviewed_at = get_utc_now()
-        decl.updated_at = get_utc_now()
-
-        if review_in.review_status == ReviewStatus.CORRECTED:
+        # Map frontend review actions back to resolution status
+        if review_in.review_status == ReviewStatus.CONFIRMED:
+            decl.resolution_status = ResolutionStatus.CONFIRMED
+            decl.reviewed_value = decl.machine_extracted_value or decl.canonical_value
+        elif review_in.review_status == ReviewStatus.CORRECTED:
             if not review_in.reviewed_value:
                 raise HTTPException(
                     status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                     detail="Corrected review requires a non-empty reviewed_value.",
                 )
+            decl.resolution_status = ResolutionStatus.CONFIRMED
             decl.reviewed_value = review_in.reviewed_value
-            # Also update normalized_value to reflect human correction as effective value
+            decl.canonical_value = review_in.reviewed_value
             decl.normalized_value = review_in.reviewed_value
-        elif review_in.review_status == ReviewStatus.CONFIRMED:
-            decl.reviewed_value = decl.machine_extracted_value or decl.normalized_value
         elif review_in.review_status == ReviewStatus.REJECTED:
+            decl.resolution_status = ResolutionStatus.REJECTED
             decl.reviewed_value = None
+
+        decl.reviewed = True
+        decl.reviewed_by = user_id
+        decl.reviewed_at = get_utc_now()
+        decl.updated_at = get_utc_now()
 
         db.commit()
 
@@ -396,9 +448,9 @@ class DeclarationService:
             entity_id=declaration_id,
             metadata={
                 "scan_session_id": decl.scan_session_id,
-                "declaration_type": decl.declaration_type.value,
+                "declaration_type": decl.declaration_type.value if hasattr(decl.declaration_type, "value") else str(decl.declaration_type),
                 "previous_status": previous_status,
-                "new_status": review_in.review_status.value,
+                "new_status": review_in.review_status.value if hasattr(review_in.review_status, "value") else str(review_in.review_status),
                 "reviewed_value": review_in.reviewed_value,
                 "notes": review_in.review_notes,
             },
