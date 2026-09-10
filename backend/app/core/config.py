@@ -45,6 +45,13 @@ class Settings(BaseSettings):
     OCR_USE_ANGLE_CLS: bool = True
     OCR_LANG: str = "en"
 
+    # AI Assistant & LLM Configuration
+    GEMINI_API_KEY: str = ""
+    OPENAI_API_KEY: str = ""
+    GROQ_API_KEY: str = ""
+    LLM_PROVIDER: str = "auto"  # auto, gemini, openai, groq, ollama, mock
+    LLM_MODEL: str = "gemini-3.5-flash"
+    OLLAMA_BASE_URL: str = "http://localhost:11434"
 
     # CORS
     CORS_ORIGINS: Union[List[str], str] = [
