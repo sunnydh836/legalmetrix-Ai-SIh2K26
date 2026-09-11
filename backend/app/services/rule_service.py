@@ -49,13 +49,16 @@ class DeterministicRuleService(RuleServiceInterface):
         # Index declarations by type for fast lookup
         # Only input AUTO_RESOLVED and CONFIRMED declarations to the engine logic
         decl_by_type: Dict[DeclarationType, List[DeclarationBase]] = {}
+        unresolved_by_type: Dict[DeclarationType, List[DeclarationBase]] = {}
         unresolved_declarations = False
 
         for decl in declarations:
             if decl.resolution_status in [ResolutionStatus.AUTO_RESOLVED, ResolutionStatus.CONFIRMED]:
                 decl_by_type.setdefault(decl.declaration_type, []).append(decl)
-            elif decl.resolution_status in [ResolutionStatus.NEEDS_REVIEW, ResolutionStatus.CONFLICT]:
-                unresolved_declarations = True
+            else:
+                unresolved_by_type.setdefault(decl.declaration_type, []).append(decl)
+                if decl.resolution_status in [ResolutionStatus.NEEDS_REVIEW, ResolutionStatus.CONFLICT]:
+                    unresolved_declarations = True
 
         # Baseline rule definitions (Mock representation of Legal Metrology Rule checks)
         sample_rules = [
@@ -119,8 +122,27 @@ class DeterministicRuleService(RuleServiceInterface):
         for rule in sample_rules:
             target = rule["target"]
             matched_decls = decl_by_type.get(target, [])
+            unresolved_decls = unresolved_by_type.get(target, [])
 
-            if not matched_decls:
+            if unresolved_decls:
+                top_unresolved = max(unresolved_decls, key=lambda d: d.confidence)
+                findings.append(
+                    ComplianceFindingResponse(
+                        id=str(uuid.uuid4()),
+                        scan_session_id=scan_session_id,
+                        rule_code=rule["rule_code"],
+                        rule_version=rule_set_version,
+                        status=ComplianceStatus.REVIEW,
+                        reason_code=ReasonCode.MANUAL_REVIEW_TRIGGERED,
+                        message="Unresolved or insufficient evidence requires human review.",
+                        detected_value={"raw_text": top_unresolved.raw_text, "normalized": top_unresolved.normalized_value},
+                        expected_requirement={"description": rule["expected"]},
+                        confidence=top_unresolved.confidence,
+                        evidence_reference={"source_ocr_block_id": top_unresolved.source_ocr_block_id},
+                        created_at=datetime.now(timezone.utc),
+                    )
+                )
+            elif not matched_decls:
                 findings.append(
                     ComplianceFindingResponse(
                         id=str(uuid.uuid4()),

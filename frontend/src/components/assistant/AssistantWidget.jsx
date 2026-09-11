@@ -331,7 +331,7 @@ const AssistantWidget = () => {
 
             return (
               <span key={lIdx} style={{ display: isBullet ? 'flex' : 'inline', gap: '4px', marginBottom: isBullet ? '2px' : 0 }}>
-                {isBullet && <span style={{ color: '#3b82f6' }}>•</span>}
+                {isBullet && <span style={{ color: 'var(--info)' }}>•</span>}
                 <span>{formattedParts}</span>
                 {lIdx < lines.length - 1 && !isBullet && <br />}
               </span>
@@ -356,7 +356,7 @@ const AssistantWidget = () => {
             height: '56px',
             borderRadius: '50%',
             backgroundColor: '#1e3a8a',
-            color: '#ffffff',
+            color: 'var(--bg-surface)',
             border: 'none',
             boxShadow: '0 8px 24px rgba(30, 58, 138, 0.35)',
             display: 'flex',
@@ -396,7 +396,7 @@ const AssistantWidget = () => {
             width: isExpanded ? '640px' : '400px',
             height: isExpanded ? '80vh' : '560px',
             maxHeight: '85vh',
-            backgroundColor: '#ffffff',
+            backgroundColor: 'var(--bg-surface)',
             borderRadius: '16px',
             boxShadow: '0 12px 40px rgba(0, 0, 0, 0.18)',
             border: '1px solid #e2e8f0',
@@ -415,7 +415,7 @@ const AssistantWidget = () => {
             style={{
               padding: '12px 16px',
               backgroundColor: '#1e3a8a',
-              color: '#ffffff',
+              color: 'var(--bg-surface)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
@@ -443,7 +443,7 @@ const AssistantWidget = () => {
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: ttsEnabled ? '#60a5fa' : '#ffffff',
+                  color: ttsEnabled ? '#60a5fa' : 'var(--bg-surface)',
                   cursor: 'pointer',
                   padding: '4px',
                   borderRadius: '4px',
@@ -457,7 +457,7 @@ const AssistantWidget = () => {
               <button
                 type="button"
                 onClick={clearChat}
-                style={{ background: 'none', border: 'none', color: '#ffffff', cursor: 'pointer', padding: '4px' }}
+                style={{ background: 'none', border: 'none', color: 'var(--bg-surface)', cursor: 'pointer', padding: '4px' }}
                 title="Clear Chat History"
               >
                 <Trash2 size={16} />
@@ -467,7 +467,7 @@ const AssistantWidget = () => {
               <button
                 type="button"
                 onClick={() => setIsExpanded(!isExpanded)}
-                style={{ background: 'none', border: 'none', color: '#ffffff', cursor: 'pointer', padding: '4px' }}
+                style={{ background: 'none', border: 'none', color: 'var(--bg-surface)', cursor: 'pointer', padding: '4px' }}
                 title={isExpanded ? 'Shrink Drawer' : 'Expand Drawer'}
               >
                 {isExpanded ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
@@ -477,7 +477,7 @@ const AssistantWidget = () => {
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                style={{ background: 'none', border: 'none', color: '#ffffff', cursor: 'pointer', padding: '4px' }}
+                style={{ background: 'none', border: 'none', color: 'var(--bg-surface)', cursor: 'pointer', padding: '4px' }}
                 title="Close Drawer"
               >
                 <X size={18} />
@@ -489,7 +489,7 @@ const AssistantWidget = () => {
           {activeScanId && (
             <div
               style={{
-                backgroundColor: '#eff6ff',
+                backgroundColor: 'var(--info-bg)',
                 padding: '6px 12px',
                 fontSize: '11px',
                 color: '#1e40af',
@@ -503,7 +503,7 @@ const AssistantWidget = () => {
                 <Zap size={12} color="#2563eb" /> Grounded on Scan Session: <strong>{activeScanId}</strong>
               </div>
               {tokensSaved > 0 && (
-                <span style={{ fontSize: '10px', backgroundColor: '#dcfce7', color: '#166534', padding: '1px 6px', borderRadius: '10px', fontWeight: 600 }}>
+                <span style={{ fontSize: '10px', backgroundColor: 'var(--success-bg)', color: '#166534', padding: '1px 6px', borderRadius: '10px', fontWeight: 600 }}>
                   ~{tokensSaved} tokens saved
                 </span>
               )}
@@ -522,7 +522,7 @@ const AssistantWidget = () => {
               display: 'flex',
               flexDirection: 'column',
               gap: '12px',
-              backgroundColor: '#f8fafc',
+              backgroundColor: 'var(--bg-primary)',
             }}
           >
             {messages.map((msg, idx) => {
@@ -541,8 +541,8 @@ const AssistantWidget = () => {
                       maxWidth: '88%',
                       padding: '10px 14px',
                       borderRadius: isUser ? '14px 14px 2px 14px' : '14px 14px 14px 2px',
-                      backgroundColor: isUser ? '#1e3a8a' : '#ffffff',
-                      color: isUser ? '#ffffff' : '#1e293b',
+                      backgroundColor: isUser ? '#1e3a8a' : 'var(--bg-surface)',
+                      color: isUser ? 'var(--bg-surface)' : 'var(--text-primary)',
                       fontSize: '13px',
                       boxShadow: isUser
                         ? '0 2px 8px rgba(30, 58, 138, 0.2)'
@@ -579,7 +579,7 @@ const AssistantWidget = () => {
                         style={{
                           background: 'none',
                           border: 'none',
-                          color: '#64748b',
+                          color: 'var(--text-muted)',
                           cursor: 'pointer',
                           padding: '2px',
                           display: 'flex',
@@ -604,7 +604,7 @@ const AssistantWidget = () => {
             <div
               style={{
                 padding: '6px 12px',
-                backgroundColor: '#f1f5f9',
+                backgroundColor: 'var(--bg-primary)',
                 borderTop: '1px solid #e2e8f0',
                 display: 'flex',
                 alignItems: 'center',
@@ -613,12 +613,12 @@ const AssistantWidget = () => {
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <img src={attachedImage} alt="preview" style={{ width: '28px', height: '28px', borderRadius: '4px', objectFit: 'cover' }} />
-                <span style={{ fontSize: '11px', color: '#475569', fontWeight: 500 }}>{attachedImageName}</span>
+                <span style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: 500 }}>{attachedImageName}</span>
               </div>
               <button
                 type="button"
                 onClick={clearAttachedImage}
-                style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '2px' }}
+                style={{ background: 'none', border: 'none', color: 'var(--danger)', cursor: 'pointer', padding: '2px' }}
               >
                 <X size={14} />
               </button>
@@ -629,7 +629,7 @@ const AssistantWidget = () => {
           <div
             style={{
               padding: '10px 12px',
-              backgroundColor: '#ffffff',
+              backgroundColor: 'var(--bg-surface)',
               borderTop: '1px solid #e2e8f0',
               display: 'flex',
               alignItems: 'center',
@@ -652,7 +652,7 @@ const AssistantWidget = () => {
               style={{
                 background: 'none',
                 border: 'none',
-                color: '#64748b',
+                color: 'var(--text-muted)',
                 cursor: 'pointer',
                 padding: '6px',
                 borderRadius: '50%',
@@ -670,9 +670,9 @@ const AssistantWidget = () => {
               type="button"
               onClick={toggleVoiceInput}
               style={{
-                background: isListening ? '#fee2e2' : 'none',
+                background: isListening ? 'var(--danger-bg)' : 'none',
                 border: 'none',
-                color: isListening ? '#dc2626' : '#64748b',
+                color: isListening ? 'var(--danger)' : 'var(--text-muted)',
                 cursor: 'pointer',
                 padding: '6px',
                 borderRadius: '50%',
@@ -718,8 +718,8 @@ const AssistantWidget = () => {
                 width: '36px',
                 height: '36px',
                 borderRadius: '50%',
-                backgroundColor: isStreaming || (!inputMessage.trim() && !attachedImage) ? '#94a3b8' : '#1e3a8a',
-                color: '#ffffff',
+                backgroundColor: isStreaming || (!inputMessage.trim() && !attachedImage) ? 'var(--text-muted)' : '#1e3a8a',
+                color: 'var(--bg-surface)',
                 border: 'none',
                 cursor: isStreaming || (!inputMessage.trim() && !attachedImage) ? 'not-allowed' : 'pointer',
                 display: 'flex',

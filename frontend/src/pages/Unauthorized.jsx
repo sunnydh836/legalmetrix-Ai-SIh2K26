@@ -26,12 +26,12 @@ const Unauthorized = () => {
           width: '64px',
           height: '64px',
           borderRadius: '50%',
-          backgroundColor: '#fee2e2',
+          backgroundColor: 'var(--danger-bg)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           margin: '0 auto 20px',
-          color: '#dc2626',
+          color: 'var(--danger)',
         }}>
           <ShieldAlert size={36} />
         </div>
@@ -39,7 +39,7 @@ const Unauthorized = () => {
         <h1 style={{
           fontSize: '22px',
           fontWeight: 700,
-          color: '#0f172a',
+          color: 'var(--bg-sidebar)',
           marginBottom: '8px',
         }}>
           Access Restricted
@@ -47,7 +47,7 @@ const Unauthorized = () => {
 
         <p style={{
           fontSize: '14px',
-          color: '#64748b',
+          color: 'var(--text-muted)',
           lineHeight: '1.6',
           marginBottom: '20px',
         }}>
@@ -56,12 +56,12 @@ const Unauthorized = () => {
 
         {user && (
           <div style={{
-            backgroundColor: '#f8fafc',
+            backgroundColor: 'var(--bg-primary)',
             border: '1px solid #e2e8f0',
             borderRadius: '6px',
             padding: '12px 16px',
             fontSize: '13px',
-            color: '#475569',
+            color: 'var(--text-secondary)',
             marginBottom: '24px',
             textAlign: 'left',
           }}>

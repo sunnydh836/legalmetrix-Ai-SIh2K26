@@ -18,7 +18,7 @@ const ImageQualityCard = ({
 }) => {
   if (!quality) {
     return (
-      <div className="card" style={{ padding: '16px', backgroundColor: '#f8fafc' }}>
+      <div className="card" style={{ padding: '16px', backgroundColor: 'var(--bg-primary)' }}>
         <div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
           Image quality diagnostics pending processing.
         </div>
@@ -48,8 +48,8 @@ const ImageQualityCard = ({
               gap: '6px',
               padding: '4px 10px',
               borderRadius: '20px',
-              backgroundColor: '#dcfce7',
-              color: '#15803d',
+              backgroundColor: 'var(--success-bg)',
+              color: 'var(--success)',
               fontSize: '12px',
               fontWeight: 700,
             }}
@@ -67,8 +67,8 @@ const ImageQualityCard = ({
               gap: '6px',
               padding: '4px 10px',
               borderRadius: '20px',
-              backgroundColor: '#fef3c7',
-              color: '#b45309',
+              backgroundColor: 'var(--warning-bg)',
+              color: 'var(--warning)',
               fontSize: '12px',
               fontWeight: 700,
             }}
@@ -86,8 +86,8 @@ const ImageQualityCard = ({
               gap: '6px',
               padding: '4px 10px',
               borderRadius: '20px',
-              backgroundColor: '#fee2e2',
-              color: '#b91c1c',
+              backgroundColor: 'var(--danger-bg)',
+              color: 'var(--danger)',
               fontSize: '12px',
               fontWeight: 700,
             }}
@@ -104,8 +104,8 @@ const ImageQualityCard = ({
               alignItems: 'center',
               padding: '4px 10px',
               borderRadius: '20px',
-              backgroundColor: '#f1f5f9',
-              color: '#475569',
+              backgroundColor: 'var(--bg-primary)',
+              color: 'var(--text-secondary)',
               fontSize: '12px',
             }}
           >
@@ -155,7 +155,7 @@ const ImageQualityCard = ({
         <div
           style={{
             padding: '10px 12px',
-            backgroundColor: '#f8fafc',
+            backgroundColor: 'var(--bg-primary)',
             borderRadius: '6px',
             border: '1px solid var(--border)',
           }}
@@ -176,7 +176,7 @@ const ImageQualityCard = ({
         <div
           style={{
             padding: '10px 12px',
-            backgroundColor: '#f8fafc',
+            backgroundColor: 'var(--bg-primary)',
             borderRadius: '6px',
             border: '1px solid var(--border)',
           }}
@@ -197,7 +197,7 @@ const ImageQualityCard = ({
         <div
           style={{
             padding: '10px 12px',
-            backgroundColor: '#f8fafc',
+            backgroundColor: 'var(--bg-primary)',
             borderRadius: '6px',
             border: '1px solid var(--border)',
           }}
@@ -259,7 +259,7 @@ const ImageQualityCard = ({
             type="button"
             className="btn btn-secondary"
             onClick={onRecapture}
-            style={{ padding: '3px 8px', fontSize: '11px', color: '#b91c1c' }}
+            style={{ padding: '3px 8px', fontSize: '11px', color: 'var(--danger)' }}
           >
             <RefreshCw size={12} /> Replace Image
           </button>

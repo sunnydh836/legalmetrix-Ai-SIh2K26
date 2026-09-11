@@ -31,9 +31,9 @@ const Reports = () => {
           <tbody>
             {reports.map((r) => (
               <tr key={r.id}>
-                <td style={{ fontFamily: 'monospace', fontWeight: 600 }}>{r.id}</td>
-                <td style={{ fontFamily: 'monospace' }}>{r.scanId}</td>
-                <td>{r.product}</td>
+                <td style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, color: 'var(--primary)' }}>{r.id}</td>
+                <td style={{ fontFamily: 'var(--font-mono)' }}>{r.scanId}</td>
+                <td style={{ fontWeight: 500 }}>{r.product}</td>
                 <td><ViolationBadge status={r.status} /></td>
                 <td style={{ color: 'var(--text-muted)' }}>{r.date}</td>
                 <td>

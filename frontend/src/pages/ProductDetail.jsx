@@ -18,7 +18,7 @@ const ProductDetail = () => {
 
       <div className="card">
         <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '20px' }}>
-          <div style={{ padding: '12px', backgroundColor: '#eff6ff', borderRadius: '8px', color: '#1e3a8a' }}>
+          <div style={{ padding: '12px', backgroundColor: 'var(--info-bg)', borderRadius: '8px', color: '#1e3a8a' }}>
             <Package size={28} />
           </div>
           <div>

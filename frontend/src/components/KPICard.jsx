@@ -1,17 +1,17 @@
 import React from 'react';
 
-const KPICard = ({ title, value, subtitle, icon: Icon, color = '#1e3a8a' }) => {
+const KPICard = ({ title, value, subtitle, icon: Icon, color = 'var(--primary)', bg = 'var(--primary-light)' }) => {
   return (
     <div className="card" style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
       <div>
         <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
           {title}
         </div>
-        <div style={{ fontSize: '28px', fontWeight: 700, color: 'var(--text-primary)', marginTop: '8px' }}>
+        <div style={{ fontSize: '32px', fontWeight: 700, color: 'var(--text-primary)', marginTop: '8px', letterSpacing: '-0.5px' }}>
           {value}
         </div>
         {subtitle && (
-          <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '4px' }}>
+          <div style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '4px' }}>
             {subtitle}
           </div>
         )}
@@ -19,9 +19,9 @@ const KPICard = ({ title, value, subtitle, icon: Icon, color = '#1e3a8a' }) => {
 
       {Icon && (
         <div style={{
-          padding: '10px',
-          borderRadius: '8px',
-          backgroundColor: `${color}15`,
+          padding: '12px',
+          borderRadius: '10px',
+          backgroundColor: bg,
           color: color,
           display: 'flex',
           alignItems: 'center',

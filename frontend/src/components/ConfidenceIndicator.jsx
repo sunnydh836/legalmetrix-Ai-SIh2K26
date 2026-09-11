@@ -6,7 +6,7 @@ const ConfidenceIndicator = ({ confidence = 1.0, threshold = 0.80 }) => {
   const isMedium = confidence >= 0.60 && confidence < threshold;
 
   const color = isHigh ? '#166534' : isMedium ? '#854d0e' : '#991b1b';
-  const bgColor = isHigh ? '#dcfce7' : isMedium ? '#fef9c3' : '#fee2e2';
+  const bgColor = isHigh ? 'var(--success-bg)' : isMedium ? '#fef9c3' : 'var(--danger-bg)';
 
   return (
     <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
@@ -14,7 +14,7 @@ const ConfidenceIndicator = ({ confidence = 1.0, threshold = 0.80 }) => {
         width: '40px',
         height: '6px',
         borderRadius: '3px',
-        backgroundColor: '#e2e8f0',
+        backgroundColor: 'var(--border-color)',
         overflow: 'hidden',
       }}>
         <div style={{

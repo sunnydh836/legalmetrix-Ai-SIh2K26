@@ -27,10 +27,10 @@ const Dashboard = () => {
 
       {/* KPI Summary Cards */}
       <div className="kpi-grid">
-        <KPICard title="Total Inspections" value="1,248" subtitle="+12% this week" icon={FileCheck} color="#1e3a8a" />
-        <KPICard title="Compliant (Pass)" value="1,082" subtitle="86.7% compliance rate" icon={FileCheck} color="#166534" />
-        <KPICard title="Violations Detected" value="114" subtitle="Action notices generated" icon={AlertTriangle} color="#991b1b" />
-        <KPICard title="Pending Review" value="52" subtitle="Human inspection queue" icon={Clock} color="#854d0e" />
+        <KPICard title="Total Inspections" value="1,248" subtitle="+12% this week" icon={FileCheck} color="var(--primary)" bg="var(--primary-light)" />
+        <KPICard title="Compliant (Pass)" value="1,082" subtitle="86.7% compliance rate" icon={FileCheck} color="var(--success)" bg="var(--success-bg)" />
+        <KPICard title="Violations Detected" value="114" subtitle="Action notices generated" icon={AlertTriangle} color="var(--danger)" bg="var(--danger-bg)" />
+        <KPICard title="Pending Review" value="52" subtitle="Human inspection queue" icon={Clock} color="var(--warning)" bg="var(--warning-bg)" />
       </div>
 
       {/* Recent Inspections Table */}
@@ -54,13 +54,13 @@ const Dashboard = () => {
           <tbody>
             {recentInspections.map((scan) => (
               <tr key={scan.id}>
-                <td style={{ fontFamily: 'monospace', fontWeight: 600 }}>{scan.id}</td>
-                <td>{scan.product}</td>
+                <td style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, color: 'var(--primary)' }}>{scan.id}</td>
+                <td style={{ fontWeight: 500 }}>{scan.product}</td>
                 <td>{scan.brand}</td>
                 <td><ViolationBadge status={scan.status} /></td>
                 <td style={{ color: 'var(--text-muted)' }}>{scan.date}</td>
                 <td>
-                  <Link to={`/inspections/${scan.id}`} style={{ fontSize: '13px', fontWeight: 500 }}>
+                  <Link to={`/inspections/${scan.id}`} style={{ fontSize: '13px', fontWeight: 600, color: 'var(--info)' }}>
                     Details
                   </Link>
                 </td>

@@ -26,8 +26,8 @@ const Sidebar = () => {
   return (
     <aside style={{
       width: '240px',
-      backgroundColor: '#0f172a',
-      color: '#f8fafc',
+      backgroundColor: 'var(--bg-sidebar)',
+      color: 'var(--text-inverse)',
       display: 'flex',
       flexDirection: 'column',
       flexShrink: 0,
@@ -40,10 +40,10 @@ const Sidebar = () => {
         alignItems: 'center',
         gap: '10px',
       }}>
-        <ShieldCheck size={26} color="#38bdf8" />
+        <ShieldCheck size={26} color="var(--info)" />
         <div>
-          <div style={{ fontWeight: 700, fontSize: '16px', letterSpacing: '0.5px' }}>LegalMetrix AI</div>
-          <div style={{ fontSize: '11px', color: '#94a3b8' }}>Packaged Commodities (2011)</div>
+          <div style={{ fontWeight: 700, fontSize: '18px', letterSpacing: '-0.5px' }}>LegalMetrix AI</div>
+          <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Packaged Commodities</div>
         </div>
       </div>
 
@@ -62,11 +62,13 @@ const Sidebar = () => {
                 padding: '10px 14px',
                 borderRadius: '6px',
                 fontSize: '14px',
-                fontWeight: 500,
-                color: isActive ? '#ffffff' : '#94a3b8',
-                backgroundColor: isActive ? '#1e293b' : 'transparent',
+                fontWeight: 600,
+                color: isActive ? 'var(--text-inverse)' : 'var(--text-muted)',
+                backgroundColor: isActive ? 'var(--primary-hover)' : 'transparent',
                 marginBottom: '4px',
                 textDecoration: 'none',
+                boxShadow: isActive ? 'inset 4px 0 0 var(--accent)' : 'none',
+                transition: 'all 0.2s ease',
               })}
             >
               <Icon size={18} />
@@ -79,12 +81,12 @@ const Sidebar = () => {
       {/* System Status Footer */}
       <div style={{
         padding: '16px 20px',
-        borderTop: '1px solid #1e293b',
+        borderTop: '1px solid var(--primary-hover)',
         fontSize: '12px',
-        color: '#64748b',
+        color: 'var(--text-muted)',
       }}>
         <div>Version 1.0 (Day 2)</div>
-        <div style={{ color: '#22c55e', marginTop: '2px' }}>● System Operational</div>
+        <div style={{ color: 'var(--success)', marginTop: '2px', fontFamily: 'var(--font-mono)' }}>● System Operational</div>
       </div>
     </aside>
   );

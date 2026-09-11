@@ -516,9 +516,9 @@ const NewScan = () => {
         ...item,
         status: 'NOT_DETECTED',
         badgeText: 'Not detected',
-        color: '#94a3b8',
-        bg: '#f8fafc',
-        border: '#e2e8f0',
+        color: 'var(--text-muted)',
+        bg: 'var(--bg-primary)',
+        border: 'var(--border-color)',
         matchingCount: 0,
       };
     }
@@ -529,9 +529,9 @@ const NewScan = () => {
         ...item,
         status: 'CONFLICT',
         badgeText: 'Detected — Conflict',
-        color: '#b91c1c',
-        bg: '#fee2e2',
-        border: '#fca5a5',
+        color: 'var(--danger)',
+        bg: 'var(--danger-bg)',
+        border: 'var(--danger-border)',
         matchingCount: matching.length,
       };
     }
@@ -542,9 +542,9 @@ const NewScan = () => {
         ...item,
         status: 'CONFIRMED',
         badgeText: 'Detected — Confirmed',
-        color: '#15803d',
-        bg: '#dcfce7',
-        border: '#86efac',
+        color: 'var(--success)',
+        bg: 'var(--success-bg)',
+        border: 'var(--success-border)',
         matchingCount: matching.length,
       };
     }
@@ -555,9 +555,9 @@ const NewScan = () => {
         ...item,
         status: 'REJECTED',
         badgeText: 'Rejected',
-        color: '#dc2626',
-        bg: '#fef2f2',
-        border: '#fecaca',
+        color: 'var(--danger)',
+        bg: 'var(--danger-bg)',
+        border: 'var(--danger-border)',
         matchingCount: matching.length,
       };
     }
@@ -567,9 +567,9 @@ const NewScan = () => {
       ...item,
       status: 'NEEDS_REVIEW',
       badgeText: 'Detected — Needs Review',
-      color: '#b45309',
-      bg: '#fef3c7',
-      border: '#fde68a',
+      color: 'var(--warning)',
+      bg: 'var(--warning-bg)',
+      border: 'var(--warning-border)',
       matchingCount: matching.length,
     };
   });
@@ -592,15 +592,15 @@ const NewScan = () => {
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div
               style={{
-                backgroundColor: '#e0f2fe',
+                backgroundColor: 'var(--info-bg)',
                 border: '1px solid #bae6fd',
                 borderRadius: '6px',
                 padding: '6px 12px',
                 textAlign: 'right',
               }}
             >
-              <div style={{ fontSize: '11px', color: '#0369a1', fontWeight: 600 }}>INSPECTION CODE</div>
-              <div style={{ fontSize: '14px', fontWeight: 700, color: '#0284c7', fontFamily: 'monospace' }}>
+              <div style={{ fontSize: '11px', color: 'var(--info)', fontWeight: 600 }}>INSPECTION CODE</div>
+              <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--info)', fontFamily: 'monospace' }}>
                 {scanCode}
               </div>
             </div>
@@ -624,10 +624,10 @@ const NewScan = () => {
             alignItems: 'center',
             gap: '8px',
             padding: '12px 16px',
-            backgroundColor: '#fef2f2',
+            backgroundColor: 'var(--danger-bg)',
             border: '1px solid #fecaca',
             borderRadius: '6px',
-            color: '#b91c1c',
+            color: 'var(--danger)',
             fontSize: '13px',
             marginBottom: '20px',
           }}
@@ -644,10 +644,10 @@ const NewScan = () => {
             alignItems: 'center',
             gap: '8px',
             padding: '12px 16px',
-            backgroundColor: '#f0fdf4',
+            backgroundColor: 'var(--success-bg)',
             border: '1px solid #bbf7d0',
             borderRadius: '6px',
-            color: '#15803d',
+            color: 'var(--success)',
             fontSize: '13px',
             marginBottom: '20px',
           }}
@@ -667,7 +667,7 @@ const NewScan = () => {
                 height: '24px',
                 borderRadius: '50%',
                 backgroundColor: 'var(--primary)',
-                color: '#ffffff',
+                color: 'var(--bg-surface)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -766,7 +766,7 @@ const NewScan = () => {
                 height: '24px',
                 borderRadius: '50%',
                 backgroundColor: 'var(--primary)',
-                color: '#ffffff',
+                color: 'var(--bg-surface)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -837,8 +837,8 @@ const NewScan = () => {
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '8px',
-                    backgroundColor: '#0284c7',
-                    color: '#ffffff',
+                    backgroundColor: 'var(--info)',
+                    color: 'var(--bg-surface)',
                     fontWeight: 600,
                   }}
                 >
@@ -867,8 +867,8 @@ const NewScan = () => {
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '8px',
-                    backgroundColor: '#16a34a',
-                    color: '#ffffff',
+                    backgroundColor: 'var(--success)',
+                    color: 'var(--bg-surface)',
                     fontWeight: 600,
                   }}
                 >
@@ -892,7 +892,7 @@ const NewScan = () => {
         {/* Sidebar Info & Status */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {/* Current Session State */}
-          <div className="card" style={{ backgroundColor: '#f8fafc' }}>
+          <div className="card" style={{ backgroundColor: 'var(--bg-primary)' }}>
             <h3 style={{ fontSize: '14px', fontWeight: 600, marginBottom: '12px', color: 'var(--text-primary)' }}>
               Inspection Session Status
             </h3>
@@ -904,10 +904,10 @@ const NewScan = () => {
                     fontWeight: 600,
                     color:
                       scanStatus === 'DECLARATIONS_EXTRACTED'
-                        ? '#16a34a'
+                        ? 'var(--success)'
                         : scanStatus === 'OCR_COMPLETED'
-                          ? '#0284c7'
-                          : '#64748b',
+                          ? 'var(--info)'
+                          : 'var(--text-muted)',
                   }}
                 >
                   {scanStatus || 'NOT_CREATED'}
@@ -919,13 +919,13 @@ const NewScan = () => {
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Declarations Found:</span>
-                <span style={{ fontWeight: 600, color: '#16a34a' }}>
+                <span style={{ fontWeight: 600, color: 'var(--success)' }}>
                   {declarationsData?.total_declarations || 0} Fields
                 </span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Extractor Version:</span>
-                <span style={{ color: '#0284c7', fontWeight: 600, fontFamily: 'monospace' }}>
+                <span style={{ color: 'var(--info)', fontWeight: 600, fontFamily: 'monospace' }}>
                   v1.0.0 (Deterministic)
                 </span>
               </div>
@@ -933,7 +933,7 @@ const NewScan = () => {
           </div>
 
           {/* Architectural Guardrails */}
-          <div className="card" style={{ backgroundColor: '#ffffff', border: '1px solid var(--border)' }}>
+          <div className="card" style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', color: 'var(--primary)' }}>
               <Info size={18} />
               <h3 style={{ fontSize: '14px', fontWeight: 600 }}>Day 5 Intelligence Boundary</h3>
@@ -967,8 +967,8 @@ const NewScan = () => {
                   width: '28px',
                   height: '28px',
                   borderRadius: '50%',
-                  backgroundColor: '#16a34a',
-                  color: '#ffffff',
+                  backgroundColor: 'var(--success)',
+                  color: 'var(--bg-surface)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -990,22 +990,22 @@ const NewScan = () => {
 
             {/* Quick Stat Chips */}
             <div style={{ display: 'flex', gap: '8px' }}>
-              <div style={{ padding: '4px 10px', borderRadius: '6px', backgroundColor: '#f1f5f9', fontSize: '12px' }}>
+              <div style={{ padding: '4px 10px', borderRadius: '6px', backgroundColor: 'var(--bg-primary)', fontSize: '12px' }}>
                 Total: <strong>{declarationsData.total_declarations}</strong>
               </div>
-              <div style={{ padding: '4px 10px', borderRadius: '6px', backgroundColor: '#fef3c7', color: '#b45309', fontSize: '12px' }}>
+              <div style={{ padding: '4px 10px', borderRadius: '6px', backgroundColor: 'var(--warning-bg)', color: 'var(--warning)', fontSize: '12px' }}>
                 Unreviewed: <strong>{declarationsData.unreviewed_count}</strong>
               </div>
-              <div style={{ padding: '4px 10px', borderRadius: '6px', backgroundColor: '#dcfce7', color: '#15803d', fontSize: '12px' }}>
+              <div style={{ padding: '4px 10px', borderRadius: '6px', backgroundColor: 'var(--success-bg)', color: 'var(--success)', fontSize: '12px' }}>
                 Confirmed: <strong>{declarationsData.confirmed_count}</strong>
               </div>
               {declarationsData.corrected_count > 0 && (
-                <div style={{ padding: '4px 10px', borderRadius: '6px', backgroundColor: '#e0f2fe', color: '#0369a1', fontSize: '12px' }}>
+                <div style={{ padding: '4px 10px', borderRadius: '6px', backgroundColor: 'var(--info-bg)', color: 'var(--info)', fontSize: '12px' }}>
                   Corrected: <strong>{declarationsData.corrected_count}</strong>
                 </div>
               )}
               {declarationsData.rejected_count > 0 && (
-                <div style={{ padding: '4px 10px', borderRadius: '6px', backgroundColor: '#fee2e2', color: '#b91c1c', fontSize: '12px' }}>
+                <div style={{ padding: '4px 10px', borderRadius: '6px', backgroundColor: 'var(--danger-bg)', color: 'var(--danger)', fontSize: '12px' }}>
                   Rejected: <strong>{declarationsData.rejected_count}</strong>
                 </div>
               )}
@@ -1045,7 +1045,7 @@ const NewScan = () => {
                   />
                 ))
               ) : (
-                <div style={{ padding: '30px', textAlign: 'center', color: 'var(--text-muted)', backgroundColor: '#f8fafc', borderRadius: '6px' }}>
+                <div style={{ padding: '30px', textAlign: 'center', color: 'var(--text-muted)', backgroundColor: 'var(--bg-primary)', borderRadius: '6px' }}>
                   No declarations matching filter "{activeDeclFilter}".
                 </div>
               )}
@@ -1053,9 +1053,9 @@ const NewScan = () => {
 
             {/* Right: Statutory Taxonomy Checklist (Real-time Source of Truth) */}
             <div>
-              <div className="card" style={{ padding: '16px', backgroundColor: '#f8fafc', border: '1px solid var(--border)' }}>
+              <div className="card" style={{ padding: '16px', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                  <h4 style={{ fontSize: '13px', fontWeight: 600, color: '#334155', margin: 0 }}>
+                  <h4 style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-secondary)', margin: 0 }}>
                     Taxonomy Checklist Status
                   </h4>
                   <span
@@ -1064,8 +1064,8 @@ const NewScan = () => {
                       fontWeight: 600,
                       padding: '2px 8px',
                       borderRadius: '12px',
-                      backgroundColor: '#e2e8f0',
-                      color: '#475569',
+                      backgroundColor: 'var(--border-color)',
+                      color: 'var(--text-secondary)',
                     }}
                   >
                     {checklistItems.filter((i) => i.status !== 'NOT_DETECTED' && i.status !== 'REJECTED').length} / {checklistItems.length} Present
@@ -1085,12 +1085,12 @@ const NewScan = () => {
                         alignItems: 'center',
                         fontSize: '12px',
                         padding: '7px 10px',
-                        backgroundColor: '#ffffff',
+                        backgroundColor: 'var(--bg-surface)',
                         borderRadius: '6px',
                         border: '1px solid #e2e8f0',
                       }}
                     >
-                      <span style={{ color: '#334155', fontWeight: 500, fontSize: '12px' }}>{item.label}</span>
+                      <span style={{ color: 'var(--text-secondary)', fontWeight: 500, fontSize: '12px' }}>{item.label}</span>
                       <span
                         style={{
                           fontSize: '10px',
@@ -1124,8 +1124,8 @@ const NewScan = () => {
                   width: '24px',
                   height: '24px',
                   borderRadius: '50%',
-                  backgroundColor: '#0284c7',
-                  color: '#ffffff',
+                  backgroundColor: 'var(--info)',
+                  color: 'var(--bg-surface)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -1160,7 +1160,7 @@ const NewScan = () => {
                   <span
                     style={{
                       fontSize: '10px',
-                      backgroundColor: selectedImageIndex === idx ? 'rgba(255,255,255,0.2)' : '#e2e8f0',
+                      backgroundColor: selectedImageIndex === idx ? 'rgba(255,255,255,0.2)' : 'var(--border-color)',
                       padding: '2px 6px',
                       borderRadius: '10px',
                     }}
@@ -1263,10 +1263,10 @@ const NewScan = () => {
                               padding: '10px 12px',
                               borderRadius: '6px',
                               backgroundColor: isSelected
-                                ? '#eff6ff'
+                                ? 'var(--info-bg)'
                                 : isHovered
-                                  ? '#f8fafc'
-                                  : '#ffffff',
+                                  ? 'var(--bg-primary)'
+                                  : 'var(--bg-surface)',
                               border: isSelected
                                 ? '1.5px solid #3b82f6'
                                 : isHovered
@@ -1289,16 +1289,16 @@ const NewScan = () => {
                                     borderRadius: '4px',
                                     backgroundColor:
                                       block.confidence >= 0.8
-                                        ? '#dcfce7'
+                                        ? 'var(--success-bg)'
                                         : block.confidence >= 0.6
-                                          ? '#fef3c7'
-                                          : '#fee2e2',
+                                          ? 'var(--warning-bg)'
+                                          : 'var(--danger-bg)',
                                     color:
                                       block.confidence >= 0.8
-                                        ? '#15803d'
+                                        ? 'var(--success)'
                                         : block.confidence >= 0.6
-                                          ? '#b45309'
-                                          : '#b91c1c',
+                                          ? 'var(--warning)'
+                                          : 'var(--danger)',
                                   }}
                                 >
                                   {confPercent}% {block.confidence < 0.6 ? '(Review)' : ''}

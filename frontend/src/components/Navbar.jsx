@@ -37,9 +37,9 @@ const Navbar = ({ title = 'Enforcement Portal' }) => {
 
   return (
     <header style={{
-      height: '60px',
-      backgroundColor: '#ffffff',
-      borderBottom: '1px solid #e2e8f0',
+      height: '64px',
+      backgroundColor: 'var(--bg-surface)',
+      borderBottom: '1px solid var(--border-color)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
@@ -47,7 +47,7 @@ const Navbar = ({ title = 'Enforcement Portal' }) => {
       position: 'relative',
       zIndex: 100,
     }}>
-      <div style={{ fontWeight: 600, fontSize: '15px', color: '#1e293b' }}>
+      <div style={{ fontWeight: 700, fontSize: '16px', color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>
         {title}
       </div>
 
@@ -55,12 +55,15 @@ const Navbar = ({ title = 'Enforcement Portal' }) => {
         <button style={{
           background: 'none',
           border: 'none',
-          color: '#64748b',
+          color: 'var(--text-muted)',
           cursor: 'pointer',
           display: 'flex',
           alignItems: 'center',
           padding: '6px',
-          borderRadius: '4px',
+          borderRadius: '6px',
+          transition: 'all 0.2s',
+          backgroundColor: 'var(--info-bg)',
+          color: 'var(--info)',
         }} title="System Notifications">
           <Bell size={18} />
         </button>
@@ -72,19 +75,19 @@ const Navbar = ({ title = 'Enforcement Portal' }) => {
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '10px',
-              paddingLeft: '16px',
-              borderLeft: '1px solid #e2e8f0',
+              gap: '12px',
+              paddingLeft: '20px',
+              borderLeft: '1px solid var(--border-color)',
               cursor: 'pointer',
               userSelect: 'none',
             }}
           >
             <div style={{
               width: '34px',
-              height: '34px',
-              borderRadius: '50%',
-              backgroundColor: user?.role === 'ADMIN' ? '#dbeafe' : '#f1f5f9',
-              color: user?.role === 'ADMIN' ? '#1d4ed8' : '#475569',
+              height: '36px',
+              borderRadius: '8px',
+              backgroundColor: user?.role === 'ADMIN' ? 'var(--info-bg)' : 'var(--bg-primary)',
+              color: user?.role === 'ADMIN' ? 'var(--info)' : 'var(--text-secondary)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -94,11 +97,11 @@ const Navbar = ({ title = 'Enforcement Portal' }) => {
               {user?.role === 'ADMIN' ? <Shield size={18} /> : <User size={18} />}
             </div>
             <div style={{ fontSize: '13px', textAlign: 'left' }}>
-              <div style={{ fontWeight: 600, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <div style={{ fontWeight: 700, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '4px', letterSpacing: '-0.2px' }}>
                 <span>{displayName}</span>
-                <ChevronDown size={14} color="#64748b" />
+                <ChevronDown size={14} color="var(--text-muted)" />
               </div>
-              <div style={{ fontSize: '11px', color: '#64748b' }}>Role: {roleLabel}</div>
+              <div style={{ fontSize: '12px', color: 'var(--text-secondary)', fontFamily: 'var(--font-sans)' }}>{roleLabel}</div>
             </div>
           </div>
 
@@ -109,16 +112,16 @@ const Navbar = ({ title = 'Enforcement Portal' }) => {
               right: 0,
               top: 'calc(100% + 12px)',
               width: '240px',
-              backgroundColor: '#ffffff',
+              backgroundColor: 'var(--bg-surface)',
               borderRadius: '8px',
               boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
               border: '1px solid #e2e8f0',
               overflow: 'hidden',
               animation: 'fadeIn 0.15s ease-out',
             }}>
-              <div style={{ padding: '14px 16px', borderBottom: '1px solid #f1f5f9', backgroundColor: '#f8fafc' }}>
-                <div style={{ fontWeight: 600, fontSize: '14px', color: '#0f172a' }}>{displayName}</div>
-                <div style={{ fontSize: '12px', color: '#64748b', marginTop: '2px', wordBreak: 'break-all' }}>{user?.email}</div>
+              <div style={{ padding: '14px 16px', borderBottom: '1px solid #f1f5f9', backgroundColor: 'var(--bg-primary)' }}>
+                <div style={{ fontWeight: 600, fontSize: '14px', color: 'var(--bg-sidebar)' }}>{displayName}</div>
+                <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px', wordBreak: 'break-all' }}>{user?.email}</div>
                 <div style={{ marginTop: '8px' }}>
                   <span style={{
                     display: 'inline-block',
@@ -128,8 +131,8 @@ const Navbar = ({ title = 'Enforcement Portal' }) => {
                     letterSpacing: '0.5px',
                     padding: '2px 8px',
                     borderRadius: '9999px',
-                    backgroundColor: user?.role === 'ADMIN' ? '#dbeafe' : '#f1f5f9',
-                    color: user?.role === 'ADMIN' ? '#1e40af' : '#475569',
+                    backgroundColor: user?.role === 'ADMIN' ? '#dbeafe' : 'var(--bg-primary)',
+                    color: user?.role === 'ADMIN' ? '#1e40af' : 'var(--text-secondary)',
                   }}>
                     {user?.role}
                   </span>
@@ -148,14 +151,14 @@ const Navbar = ({ title = 'Enforcement Portal' }) => {
                     backgroundColor: 'transparent',
                     border: 'none',
                     borderRadius: '6px',
-                    color: '#dc2626',
+                    color: 'var(--danger)',
                     fontSize: '13px',
                     fontWeight: 500,
                     cursor: 'pointer',
                     textAlign: 'left',
                     transition: 'background-color 0.15s',
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#fef2f2'}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--danger-bg)'}
                   onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                 >
                   <LogOut size={16} />

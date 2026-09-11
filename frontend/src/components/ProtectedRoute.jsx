@@ -14,8 +14,8 @@ const ProtectedRoute = ({ allowedRoles, children }) => {
         alignItems: 'center',
         justifyContent: 'center',
         height: '100vh',
-        backgroundColor: '#f8fafc',
-        color: '#475569',
+        backgroundColor: 'var(--bg-primary)',
+        color: 'var(--text-secondary)',
         fontFamily: 'system-ui, -apple-system, sans-serif',
       }}>
         <div style={{

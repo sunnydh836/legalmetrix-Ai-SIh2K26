@@ -42,7 +42,7 @@ const OCRImageOverlay = ({
     }
     if (conf >= 0.8) {
       return {
-        stroke: '#16a34a',
+        stroke: 'var(--success)',
         fill: 'rgba(22, 163, 74, 0.15)',
         strokeWidth: 1.5,
       };
@@ -55,7 +55,7 @@ const OCRImageOverlay = ({
       };
     }
     return {
-      stroke: '#dc2626',
+      stroke: 'var(--danger)',
       fill: 'rgba(220, 38, 38, 0.20)',
       strokeWidth: 1.5,
     };
@@ -81,7 +81,7 @@ const OCRImageOverlay = ({
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          backgroundColor: '#f8fafc',
+          backgroundColor: 'var(--bg-primary)',
           padding: '6px 12px',
           borderRadius: '6px',
           fontSize: '12px',
@@ -153,7 +153,7 @@ const OCRImageOverlay = ({
         style={{
           position: 'relative',
           width: '100%',
-          backgroundColor: '#0f172a',
+          backgroundColor: 'var(--bg-sidebar)',
           borderRadius: '8px',
           overflow: 'auto',
           display: 'flex',
@@ -164,12 +164,12 @@ const OCRImageOverlay = ({
         }}
       >
         {imageError ? (
-          <div style={{ padding: '40px', textAlign: 'center', color: '#cbd5e1' }}>
+          <div style={{ padding: '40px', textAlign: 'center', color: 'var(--border-dark)' }}>
             <AlertTriangle size={32} color="#f59e0b" style={{ margin: '0 auto 12px auto' }} />
-            <div style={{ fontSize: '14px', fontWeight: 600, color: '#f8fafc', marginBottom: '4px' }}>
+            <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--bg-primary)', marginBottom: '4px' }}>
               Image Preview Unavailable
             </div>
-            <div style={{ fontSize: '12px', color: '#94a3b8' }}>
+            <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
               Could not load image resource from <code>{imageUrl}</code>.
             </div>
           </div>
@@ -262,7 +262,7 @@ const OCRImageOverlay = ({
               left: '12px',
               right: '12px',
               backgroundColor: 'rgba(15, 23, 42, 0.92)',
-              color: '#ffffff',
+              color: 'var(--bg-surface)',
               padding: '8px 12px',
               borderRadius: '6px',
               fontSize: '12px',
@@ -296,7 +296,7 @@ const OCRImageOverlay = ({
       {/* Confidence Legend */}
       <div style={{ display: 'flex', gap: '16px', fontSize: '11px', color: 'var(--text-muted)', paddingLeft: '4px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-          <span style={{ width: '10px', height: '10px', backgroundColor: '#16a34a', borderRadius: '2px' }} />
+          <span style={{ width: '10px', height: '10px', backgroundColor: 'var(--success)', borderRadius: '2px' }} />
           <span>High (≥80%)</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -304,7 +304,7 @@ const OCRImageOverlay = ({
           <span>Medium (60-79%)</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-          <span style={{ width: '10px', height: '10px', backgroundColor: '#dc2626', borderRadius: '2px' }} />
+          <span style={{ width: '10px', height: '10px', backgroundColor: 'var(--danger)', borderRadius: '2px' }} />
           <span>Low (&lt;60% - Review)</span>
         </div>
       </div>

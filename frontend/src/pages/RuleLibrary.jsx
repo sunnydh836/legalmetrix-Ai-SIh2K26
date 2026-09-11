@@ -52,10 +52,10 @@ const RuleLibrary = () => {
                 <span style={{
                   fontSize: '11px',
                   fontFamily: 'monospace',
-                  backgroundColor: '#f1f5f9',
+                  backgroundColor: 'var(--bg-primary)',
                   padding: '2px 6px',
                   borderRadius: '3px',
-                  color: '#475569',
+                  color: 'var(--text-secondary)',
                   marginRight: '8px',
                 }}>
                   {rule.code}
@@ -63,8 +63,8 @@ const RuleLibrary = () => {
                 <span style={{
                   fontSize: '11px',
                   fontWeight: 600,
-                  backgroundColor: '#e0f2fe',
-                  color: '#0369a1',
+                  backgroundColor: 'var(--info-bg)',
+                  color: 'var(--info)',
                   padding: '2px 6px',
                   borderRadius: '3px',
                 }}>

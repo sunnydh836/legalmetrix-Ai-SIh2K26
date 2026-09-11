@@ -94,11 +94,11 @@ const DeclarationCard = ({
         marginBottom: '16px',
         padding: '16px',
         border: has_conflict
-          ? '1.5px solid #f59e0b'
+          ? '1.5px solid var(--warning)'
           : reviewed
             ? `1.5px solid ${statusStyle.border}`
             : '1px solid var(--border)',
-        backgroundColor: '#ffffff',
+        backgroundColor: 'var(--bg-surface)',
         boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
         transition: 'all 0.15s ease-in-out',
       }}
@@ -122,8 +122,8 @@ const DeclarationCard = ({
                 fontSize: '11px',
                 padding: '2px 8px',
                 borderRadius: '12px',
-                backgroundColor: '#f1f5f9',
-                color: '#64748b',
+                backgroundColor: 'var(--bg-primary)',
+                color: 'var(--text-muted)',
                 fontWeight: 600,
               }}
             >
@@ -179,7 +179,7 @@ const DeclarationCard = ({
             border: '1px solid #fde68a',
             borderRadius: '6px',
             padding: '8px 12px',
-            color: '#b45309',
+            color: 'var(--warning)',
             fontSize: '12px',
             marginBottom: '12px',
           }}
@@ -196,19 +196,19 @@ const DeclarationCard = ({
         {/* Raw Extracted */}
         <div
           style={{
-            backgroundColor: '#f8fafc',
+            backgroundColor: 'var(--bg-primary)',
             border: '1px solid #e2e8f0',
             borderRadius: '6px',
             padding: '10px 12px',
           }}
         >
-          <div style={{ fontSize: '11px', fontWeight: 600, color: '#64748b', marginBottom: '4px' }}>
+          <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '4px' }}>
             RAW OCR DETECTED
           </div>
           <div
             style={{
               fontSize: '13px',
-              color: '#1e293b',
+              color: 'var(--text-primary)',
               fontFamily: 'monospace',
               wordBreak: 'break-word',
             }}
@@ -220,7 +220,7 @@ const DeclarationCard = ({
         {/* Structured Normalized Value */}
         <div
           style={{
-            backgroundColor: isEditing ? '#fff' : '#f0fdf4',
+            backgroundColor: isEditing ? '#fff' : 'var(--success-bg)',
             border: isEditing ? '1px solid #3b82f6' : '1px solid #bbf7d0',
             borderRadius: '6px',
             padding: '10px 12px',
@@ -234,11 +234,11 @@ const DeclarationCard = ({
               marginBottom: '4px',
             }}
           >
-            <span style={{ fontSize: '11px', fontWeight: 600, color: isEditing ? '#1d4ed8' : '#15803d' }}>
+            <span style={{ fontSize: '11px', fontWeight: 600, color: isEditing ? '#1d4ed8' : 'var(--success)' }}>
               {isEditing ? 'EDIT NORMALIZED STRUCTURE' : 'NORMALIZED VALUE'}
             </span>
             {reviewed && reviewed_value && (
-              <span style={{ fontSize: '10px', color: '#0369a1', fontWeight: 600 }}>
+              <span style={{ fontSize: '10px', color: 'var(--info)', fontWeight: 600 }}>
                 (Human Corrected)
               </span>
             )}
@@ -260,7 +260,7 @@ const DeclarationCard = ({
                   resize: 'vertical',
                 }}
               />
-              {editError && <div style={{ color: '#dc2626', fontSize: '11px' }}>{editError}</div>}
+              {editError && <div style={{ color: 'var(--danger)', fontSize: '11px' }}>{editError}</div>}
               <div style={{ display: 'flex', gap: '6px', marginTop: '6px' }}>
                 <button
                   type="button"
@@ -287,15 +287,15 @@ const DeclarationCard = ({
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                   {Object.entries(normalized_value).map(([k, v]) => (
                     <div key={k} style={{ fontSize: '12px' }}>
-                      <span style={{ color: '#475569', fontWeight: 500 }}>{k}: </span>
-                      <span style={{ fontWeight: 600, color: '#0f172a' }}>
+                      <span style={{ color: 'var(--text-secondary)', fontWeight: 500 }}>{k}: </span>
+                      <span style={{ fontWeight: 600, color: 'var(--bg-sidebar)' }}>
                         {typeof v === 'object' ? JSON.stringify(v) : String(v)}
                       </span>
                     </div>
                   ))}
                 </div>
               ) : (
-                <span style={{ color: '#94a3b8' }}>Unresolved</span>
+                <span style={{ color: 'var(--text-muted)' }}>Unresolved</span>
               )}
             </div>
           )}
@@ -303,7 +303,7 @@ const DeclarationCard = ({
           {/* Alternative Candidate Selector */}
           {isEditing && candidate_details && candidate_details.length > 1 && (
             <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px dashed #cbd5e1' }}>
-              <div style={{ fontSize: '11px', fontWeight: 600, color: '#475569', marginBottom: '8px' }}>
+              <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '8px' }}>
                 ALTERNATIVE EXTRACTED CANDIDATES
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -314,7 +314,7 @@ const DeclarationCard = ({
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center',
-                      backgroundColor: '#f8fafc',
+                      backgroundColor: 'var(--bg-primary)',
                       border: '1px solid #e2e8f0',
                       borderRadius: '4px',
                       padding: '6px 8px',
@@ -322,10 +322,10 @@ const DeclarationCard = ({
                     }}
                   >
                     <div style={{ display: 'flex', flexDirection: 'column', maxWidth: '75%' }}>
-                      <span style={{ color: '#1e293b', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span style={{ color: 'var(--text-primary)', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {cand.raw_value || JSON.stringify(cand.normalized_value)}
                       </span>
-                      <span style={{ color: '#64748b', fontSize: '10px' }}>
+                      <span style={{ color: 'var(--text-muted)', fontSize: '10px' }}>
                         Conf: {(cand.confidence * 100).toFixed(1)}% | OCR: {(cand.confidence_breakdown?.ocr_confidence * 100).toFixed(0)}%
                       </span>
                     </div>
@@ -350,8 +350,8 @@ const DeclarationCard = ({
         <div
           style={{
             fontSize: '11px',
-            color: '#64748b',
-            backgroundColor: '#f8fafc',
+            color: 'var(--text-muted)',
+            backgroundColor: 'var(--bg-primary)',
             border: '1px dashed #cbd5e1',
             borderRadius: '4px',
             padding: '6px 10px',
@@ -419,7 +419,7 @@ const DeclarationCard = ({
               fontSize: '12px',
               padding: '4px 10px',
               border: '1px solid #fca5a5',
-              color: '#b91c1c',
+              color: 'var(--danger)',
               backgroundColor: '#fff',
               display: 'inline-flex',
               alignItems: 'center',
@@ -438,8 +438,8 @@ const DeclarationCard = ({
             style={{
               fontSize: '12px',
               padding: '4px 10px',
-              backgroundColor: '#16a34a',
-              color: '#ffffff',
+              backgroundColor: 'var(--success)',
+              color: 'var(--bg-surface)',
               fontWeight: 600,
               display: 'inline-flex',
               alignItems: 'center',

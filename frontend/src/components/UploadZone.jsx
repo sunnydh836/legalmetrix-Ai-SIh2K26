@@ -127,26 +127,26 @@ const UploadZone = ({
     switch (status) {
       case 'UPLOADED':
         return (
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#16a34a', fontSize: '11px', fontWeight: 600 }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: 'var(--success)', fontSize: '11px', fontWeight: 600 }}>
             <CheckCircle2 size={13} /> Uploaded
           </span>
         );
       case 'UPLOADING':
         return (
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#0284c7', fontSize: '11px', fontWeight: 600 }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: 'var(--info)', fontSize: '11px', fontWeight: 600 }}>
             <Loader2 size={13} className="spin-animation" /> Uploading
           </span>
         );
       case 'FAILED':
         return (
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#dc2626', fontSize: '11px', fontWeight: 600 }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: 'var(--danger)', fontSize: '11px', fontWeight: 600 }}>
             <AlertCircle size={13} /> Failed
           </span>
         );
       case 'WAITING':
       default:
         return (
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#64748b', fontSize: '11px', fontWeight: 500 }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: 'var(--text-muted)', fontSize: '11px', fontWeight: 500 }}>
             <Clock size={13} /> Ready to save
           </span>
         );
@@ -166,7 +166,7 @@ const UploadZone = ({
           borderRadius: '8px',
           padding: '28px 20px',
           textAlign: 'center',
-          backgroundColor: isDragOver ? '#f0f9ff' : '#f8fafc',
+          backgroundColor: isDragOver ? '#f0f9ff' : 'var(--bg-primary)',
           cursor: disabled ? 'not-allowed' : 'pointer',
           transition: 'all 0.2s ease',
           marginBottom: images.length > 0 ? '20px' : '0px',
@@ -186,8 +186,8 @@ const UploadZone = ({
             display: 'inline-flex',
             padding: '12px',
             borderRadius: '50%',
-            backgroundColor: '#e0f2fe',
-            color: '#0284c7',
+            backgroundColor: 'var(--info-bg)',
+            color: 'var(--info)',
             marginBottom: '10px',
           }}
         >
@@ -197,9 +197,9 @@ const UploadZone = ({
           Upload Packaging Images (Front / Back / Side Panels)
         </div>
         <div style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '4px' }}>
-          Drag and drop images here, or <span style={{ color: '#0284c7', textDecoration: 'underline' }}>browse from device</span>
+          Drag and drop images here, or <span style={{ color: 'var(--info)', textDecoration: 'underline' }}>browse from device</span>
         </div>
-        <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '6px' }}>
+        <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '6px' }}>
           JPEG or PNG • Max 10MB per file • Up to 8 label angles
         </div>
       </div>
@@ -212,10 +212,10 @@ const UploadZone = ({
             alignItems: 'center',
             gap: '8px',
             padding: '10px 14px',
-            backgroundColor: '#fef2f2',
+            backgroundColor: 'var(--danger-bg)',
             border: '1px solid #fecaca',
             borderRadius: '6px',
-            color: '#b91c1c',
+            color: 'var(--danger)',
             fontSize: '13px',
             marginBottom: '16px',
           }}
@@ -244,7 +244,7 @@ const UploadZone = ({
                 style={{
                   border: '1px solid var(--border)',
                   borderRadius: '8px',
-                  backgroundColor: '#ffffff',
+                  backgroundColor: 'var(--bg-surface)',
                   overflow: 'hidden',
                   display: 'flex',
                   flexDirection: 'column',
@@ -257,7 +257,7 @@ const UploadZone = ({
                     position: 'relative',
                     width: '100%',
                     height: '140px',
-                    backgroundColor: '#0f172a',
+                    backgroundColor: 'var(--bg-sidebar)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -278,7 +278,7 @@ const UploadZone = ({
                       top: '6px',
                       left: '6px',
                       backgroundColor: 'rgba(0,0,0,0.65)',
-                      color: '#ffffff',
+                      color: 'var(--bg-surface)',
                       fontSize: '11px',
                       fontWeight: 600,
                       padding: '2px 6px',
@@ -306,7 +306,7 @@ const UploadZone = ({
                       {item.name || `Image_${index + 1}`}
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
-                      <span style={{ fontSize: '11px', color: '#64748b' }}>
+                      <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
                         {formatFileSize(item.size || item.file_size)}
                       </span>
                       {getStatusBadge(item.status)}
@@ -347,7 +347,7 @@ const UploadZone = ({
                           borderRadius: '4px',
                           padding: '3px 6px',
                           cursor: index === 0 ? 'not-allowed' : 'pointer',
-                          color: index === 0 ? '#cbd5e1' : 'var(--text-secondary)',
+                          color: index === 0 ? 'var(--border-dark)' : 'var(--text-secondary)',
                         }}
                         title="Move Up"
                       >
@@ -363,7 +363,7 @@ const UploadZone = ({
                           borderRadius: '4px',
                           padding: '3px 6px',
                           cursor: index === images.length - 1 ? 'not-allowed' : 'pointer',
-                          color: index === images.length - 1 ? '#cbd5e1' : 'var(--text-secondary)',
+                          color: index === images.length - 1 ? 'var(--border-dark)' : 'var(--text-secondary)',
                         }}
                         title="Move Down"
                       >
@@ -378,7 +378,7 @@ const UploadZone = ({
                       style={{
                         background: 'none',
                         border: 'none',
-                        color: '#ef4444',
+                        color: 'var(--danger)',
                         cursor: disabled ? 'not-allowed' : 'pointer',
                         padding: '4px',
                         display: 'flex',

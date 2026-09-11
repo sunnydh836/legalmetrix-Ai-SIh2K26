@@ -61,8 +61,8 @@ const QuickActions = ({ onSelectAction, disabled }) => {
               }}
               onMouseEnter={(e) => {
                 if (!disabled) {
-                  e.currentTarget.style.backgroundColor = '#eff6ff';
-                  e.currentTarget.style.borderColor = '#3b82f6';
+                  e.currentTarget.style.backgroundColor = 'var(--info-bg)';
+                  e.currentTarget.style.borderColor = 'var(--info)';
                   e.currentTarget.style.color = '#1d4ed8';
                 }
               }}
